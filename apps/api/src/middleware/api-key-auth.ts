@@ -2,7 +2,7 @@ import { createMiddleware } from "hono/factory";
 import type Redis from "ioredis";
 import type { Db } from "../db";
 import { AppError } from "./error-handler";
-import { lookupApiKey } from "../services/key.service";
+import { hashApiKey, lookupApiKey, parseApiKey } from "../services/key.service";
 
 export type ApiKeyVariables = {
   Variables: {
@@ -14,6 +14,9 @@ export type ApiKeyVariables = {
       spendLimitIdr: number | null;
       spentIdr: number;
     };
+    // Separate variable: keeps the serialized apiKey context at its original
+    // 6 fields (per Batch 2/QA contract) while downstream billing gets the hash.
+    apiKeyHash: string;
   };
 };
 
@@ -40,6 +43,7 @@ export function apiKeyAuth(db: Db, redis: Redis) {
     if (!apiKey.isActive) throw invalidApiKey();
 
     c.set("apiKey", apiKey);
+    c.set("apiKeyHash", hashApiKey(parseApiKey(raw) as string));
     await next();
   });
 }
