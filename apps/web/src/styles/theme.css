@@ -1,0 +1,25 @@
+:root {
+  --bg-canvas: #F0EEE8;
+  --bg-surface: #FAF9F5;
+  --text-primary: #282824;
+  --accent-main: #B77A45;
+  --text-secondary: #77746B;
+  --border-hairline: #DCD8CE;
+  --state-success: #54836A;
+  --state-error: #C45E52;
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--bg-canvas);
+}
