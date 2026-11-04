@@ -3,6 +3,7 @@ import { cors } from "hono/cors";
 import type { AppEnv } from "./env";
 import { errorHandler } from "./middleware/error-handler";
 import { authRoutes } from "./routes/auth";
+import { keysRoutes } from "./routes/keys";
 import { pingDb, type Db } from "./db";
 import type Redis from "ioredis";
 import { pingRedis } from "./db/redis";
@@ -65,6 +66,7 @@ export function createApp(deps: AppDeps) {
   });
 
   app.route("/api/auth", authRoutes(db, env));
+  app.route("/api/keys", keysRoutes(db, redis, env));
 
   return app;
 }
