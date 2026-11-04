@@ -44,6 +44,7 @@ export type WalletScripts = {
 };
 
 const WALLET_PREFIX = "wallet:";
+export const WALLET_SEED_PREFIX = "wallet:seed:";
 const KEY_PREFIX_CACHE = "apikey:";
 const FLEX_PREFIX = "flex:";
 
@@ -98,7 +99,14 @@ return tostring(sum)
 const INIT_WALLET_LUA = `
 local existing = redis.call('GET', KEYS[1])
 if existing then return existing end
-redis.call('SET', KEYS[1], ARGV[1], 'NX')
+local seed = ARGV[1]
+local snapshot = redis.call('GET', KEYS[2])
+if snapshot then
+  local a = tonumber(seed) or 0
+  local b = tonumber(snapshot) or 0
+  if b > a then seed = snapshot end
+end
+redis.call('SET', KEYS[1], seed, 'NX')
 return redis.call('GET', KEYS[1])
 `;
 
@@ -147,8 +155,9 @@ export function createWalletScripts(): WalletScripts {
       const value = Number(balanceIdr);
       const result = (await redis.eval(
         INIT_WALLET_LUA,
-        1,
+        2,
         `${WALLET_PREFIX}${userId}`,
+        `${WALLET_SEED_PREFIX}${userId}`,
         Number.isFinite(value) ? value.toFixed(4) : "0.0000",
       )) as string | number;
       return Number(result);

@@ -19,6 +19,13 @@ export type AppEnv = {
   UPSTREAM_ZHIPU_API_KEY?: string;
   UPSTREAM_VOLCENGINE_BASE_URL?: string;
   UPSTREAM_VOLCENGINE_API_KEY?: string;
+  // Optional QRIS gateway settings (Batch 4). Left absent in test fixtures that
+  // only exercise the Batch 1-3 routes; billing injects a provider explicitly.
+  QRIS_PROVIDER?: string;
+  QRIS_WEBHOOK_SECRET?: string;
+  TRIPAY_API_KEY?: string;
+  TRIPAY_MERCHANT_CODE?: string;
+  MIDTRANS_SERVER_KEY?: string;
 };
 
 function readPositiveInt(value: string | undefined, fallback: number): number {
@@ -68,6 +75,11 @@ function readEnv(): AppEnv {
     UPSTREAM_ZHIPU_API_KEY: process.env.UPSTREAM_ZHIPU_API_KEY,
     UPSTREAM_VOLCENGINE_BASE_URL: process.env.UPSTREAM_VOLCENGINE_BASE_URL,
     UPSTREAM_VOLCENGINE_API_KEY: process.env.UPSTREAM_VOLCENGINE_API_KEY,
+    QRIS_PROVIDER: process.env.QRIS_PROVIDER,
+    QRIS_WEBHOOK_SECRET: process.env.QRIS_WEBHOOK_SECRET,
+    TRIPAY_API_KEY: process.env.TRIPAY_API_KEY,
+    TRIPAY_MERCHANT_CODE: process.env.TRIPAY_MERCHANT_CODE,
+    MIDTRANS_SERVER_KEY: process.env.MIDTRANS_SERVER_KEY,
   };
 }
 
