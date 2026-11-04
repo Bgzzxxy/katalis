@@ -19,6 +19,20 @@ export function createApp(deps: AppDeps) {
 
   app.onError(errorHandler);
 
+  app.notFound((c) => {
+    return c.json(
+      {
+        error: {
+          message: "Route not found",
+          type: "invalid_request_error",
+          param: null,
+          code: "NOT_FOUND",
+        },
+      },
+      404,
+    );
+  });
+
   // CORS_ORIGINS is consumed from env from Batch 1 because the Vite dev server
   // runs on a different port and Batch 5 needs it for cookie-based sessions.
   app.use(

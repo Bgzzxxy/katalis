@@ -12,13 +12,19 @@ import {
 } from "../services/auth.service";
 import { sessionAuth } from "../middleware/session-auth";
 
+const emailField = z
+  .string()
+  .toLowerCase()
+  .email()
+  .max(255);
+
 const registerSchema = z.object({
-  email: z.string().email(),
+  email: emailField,
   password: z.string().min(8).max(72),
 });
 
 const loginSchema = z.object({
-  email: z.string().email(),
+  email: emailField,
   password: z.string().min(1).max(72),
 });
 
