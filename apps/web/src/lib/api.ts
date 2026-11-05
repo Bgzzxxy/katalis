@@ -12,6 +12,7 @@ import type {
   CreatedKey,
   InvoiceView,
   InvoiceStatusView,
+  DailyUsage,
 } from "./types";
 
 async function apiFetch<T>(path: string, init: RequestInit = {}): Promise<T> {
@@ -111,4 +112,8 @@ export function createInvoice(
 
 export function fetchInvoiceStatus(invoiceId: string): Promise<InvoiceStatusView> {
   return apiFetch<InvoiceStatusView>(`/api/billing/invoices/${invoiceId}/status`);
+}
+
+export function fetchDailyUsage(): Promise<DailyUsage> {
+  return apiFetch<DailyUsage>("/api/billing/usage");
 }

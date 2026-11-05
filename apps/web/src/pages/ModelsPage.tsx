@@ -4,8 +4,13 @@ import { Panel } from "../components/ui/Panel";
 import { DataState } from "../components/ui/DataState";
 import { ModelFilters, type ModelFilterValue } from "../components/models/ModelFilters";
 import { ModelsTable } from "../components/models/ModelsTable";
-import { MODEL_CATALOG } from "../lib/model-catalog";
-import { estimateCostIdr, UNLIMITED_LORA_DISCOUNT } from "../lib/pricing";
+import { MODEL_CATALOG, POOL_LABELS } from "../lib/model-catalog";
+import {
+  estimateCostIdr,
+  UNLIMITED_LORA_DISCOUNT,
+  unlimitedDiscountApplies,
+} from "../lib/pricing";
+
 import { formatIdr } from "../lib/format";
 
 /** Command-palette deep links arrive as /models?q=<id>; read the param only when
@@ -26,6 +31,9 @@ function ModelsPageBody({ query }: { query: string }) {
     query,
   });
   const [unlimitedDiscount, setUnlimitedDiscount] = useState(false);
+  const [selectedModelId, setSelectedModelId] = useState<string | null>(
+    MODEL_CATALOG[0]?.id ?? null,
+  );
   const [inputTokens, setInputTokens] = useState(500_000);
   const [outputTokens, setOutputTokens] = useState(250_000);
 
@@ -43,12 +51,15 @@ function ModelsPageBody({ query }: { query: string }) {
     });
   }, [filters]);
 
+  const selectedModel =
+    MODEL_CATALOG.find((model) => model.id === selectedModelId) ?? MODEL_CATALOG[0] ?? null;
+
   const estimate = useMemo(
     () =>
-      filtered.length === 0
+      selectedModel === null
         ? null
-        : estimateCostIdr(filtered[0], inputTokens, outputTokens, unlimitedDiscount),
-    [filtered, inputTokens, outputTokens, unlimitedDiscount],
+        : estimateCostIdr(selectedModel, inputTokens, outputTokens, unlimitedDiscount),
+    [selectedModel, inputTokens, outputTokens, unlimitedDiscount],
   );
 
   function resetFilters() {
@@ -86,10 +97,26 @@ function ModelsPageBody({ query }: { query: string }) {
               checked={unlimitedDiscount}
               onChange={(e) => setUnlimitedDiscount(e.target.checked)}
             />
-            Simulasi Unlimited −30%
+            Aktivasi Unlimited (diskon −30% khusus pool Dedicated LoRA)
           </label>
         }
       >
+        <label className="mb-3 flex max-w-md flex-col gap-1 text-[11px] font-semibold uppercase tracking-[0.05em] text-secondary">
+          Model Yang Dihitung
+          <select
+            aria-label="Model yang dihitung"
+            className="rounded border border-hairline bg-surface px-2 py-1.5 font-mono text-[13px] text-primary outline-none focus:border-accent"
+            value={selectedModelId ?? ""}
+            onChange={(e) => setSelectedModelId(e.target.value || null)}
+            disabled={MODEL_CATALOG.length === 0}
+          >
+            {MODEL_CATALOG.map((m) => (
+              <option key={m.id} value={m.id}>
+                {m.name} · {POOL_LABELS[m.pool]}
+              </option>
+            ))}
+          </select>
+        </label>
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           <label className="flex flex-col gap-1 text-[11px] font-semibold uppercase tracking-[0.05em] text-secondary">
             Token Input
@@ -124,7 +151,9 @@ function ModelsPageBody({ query }: { query: string }) {
               Diskon
             </p>
             <p className="font-mono text-[13px] tabular-nums text-success">
-              {unlimitedDiscount ? `−${Math.round(UNLIMITED_LORA_DISCOUNT * 100)}%` : "—"}
+              {selectedModel && unlimitedDiscountApplies(selectedModel, unlimitedDiscount)
+                ? `−${Math.round(UNLIMITED_LORA_DISCOUNT * 100)}%`
+                : "—"}
             </p>
           </div>
         </div>

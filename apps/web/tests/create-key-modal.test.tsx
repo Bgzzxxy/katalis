@@ -3,6 +3,7 @@ import { setupDom } from "./setup";
 setupDom();
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { CreateKeyModal } from "../src/components/keys/CreateKeyModal";
+import { SpendLimitModal } from "../src/components/keys/SpendLimitModal";
 import { ToastProvider } from "../src/hooks/useToast";
 import type { CreatedKey } from "../src/lib/types";
 
@@ -52,5 +53,78 @@ describe("CreateKeyModal: raw key shown exactly once", () => {
     );
 
     expect(screen.queryByTestId("raw-key")).toBeNull();
+  });
+});
+
+describe("SpendLimitModal", () => {
+  test("submits numeric limit and allows clearing limit", async () => {
+    let savedLimit: number | null | undefined;
+    let closed = false;
+
+    const { rerender } = render(
+      <SpendLimitModal
+        keyId="k1"
+        currentLimit={100_000}
+        onSave={async (_id, limit) => {
+          savedLimit = limit;
+        }}
+        onClose={() => {
+          closed = true;
+        }}
+      />,
+    );
+
+    expect(screen.getByText("Batas Pemakaian (Rp)")).toBeTruthy();
+    expect(screen.getByText(/Rp 100\.000/)).toBeTruthy();
+
+    const input = screen.getByLabelText("Batas pemakaian");
+    fireEvent.change(input, { target: { value: "250.000" } });
+    fireEvent.click(screen.getByText("Simpan"));
+
+    await waitFor(() => expect(savedLimit).toBe(250000));
+    expect(closed).toBe(true);
+
+    // Now test clearing limit
+    savedLimit = undefined;
+    closed = false;
+    rerender(
+      <SpendLimitModal
+        keyId="k1"
+        currentLimit={250_000}
+        onSave={async (_id, limit) => {
+          savedLimit = limit;
+        }}
+        onClose={() => {
+          closed = true;
+        }}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText("Batas pemakaian"), { target: { value: "" } });
+    fireEvent.click(screen.getByText("Simpan"));
+
+    await waitFor(() => expect(savedLimit).toBeNull());
+    expect(closed).toBe(true);
+  });
+
+  test("shows error on invalid input", async () => {
+    let savedLimit: number | null | undefined;
+
+    render(
+      <SpendLimitModal
+        keyId="k1"
+        currentLimit={null}
+        onSave={async (_id, limit) => {
+          savedLimit = limit;
+        }}
+        onClose={() => {}}
+      />,
+    );
+
+    fireEvent.change(screen.getByLabelText("Batas pemakaian"), { target: { value: "-5000" } });
+    fireEvent.click(screen.getByText("Simpan"));
+
+    expect(screen.getByText("Batas harus angka positif atau kosong")).toBeTruthy();
+    expect(savedLimit).toBeUndefined();
   });
 });

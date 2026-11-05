@@ -57,16 +57,19 @@ describe("QA ModelsPage filter integration", () => {
     expect(screen.getByText("Model (0)")).toBeTruthy();
   });
 
-  test("the Unlimited toggle applies -30% to the visible prices", () => {
+  test("the Unlimited toggle discounts ONLY the Dedicated LoRA row", () => {
     renderModels();
-    // deepseek-v4-pro: 27 in / 110 out per 1M -> 18.9 / 77 (rounded to Rp 19)
+    // deepseek-v4-pro is STABLE: 27 in / 110 out per 1M stays undiscounted.
     expect(screen.getByText("Rp 27")).toBeTruthy();
-    expect(screen.queryByText("Rp 19")).toBeNull();
 
     fireEvent.click(screen.getByRole("checkbox"));
 
-    expect(screen.getByText("Rp 19")).toBeTruthy(); // 27 * 0.7 = 18.9
-    const nominalStillShown = screen.getByText("Rp 27").closest("s");
-    expect(nominalStillShown).toBeTruthy(); // nominal is struck through, not hidden
+    // The backend bills -30% only for pool === "LORA" (hunyuan: 3 in / 12 out).
+    const struck = Array.from(document.querySelectorAll("tbody s")).map((n) => n.textContent);
+    expect(struck).toEqual(["Rp 3", "Rp 12"]);
+    expect(screen.getAllByText("Rp 8").length).toBe(1);
+    // Stable rows are untouched: no strikethrough, no discounted twin.
+    expect(screen.queryByText("Rp 19")).toBeNull();
+    expect(screen.getByText("Rp 27").closest("s")).toBeNull();
   });
 });

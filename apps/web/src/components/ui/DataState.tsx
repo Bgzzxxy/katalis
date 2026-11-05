@@ -66,7 +66,7 @@ export function DataState({
       <div
         data-testid="data-error"
         className="rounded-md border p-4"
-        style={{ background: "var(--error-subtle)", borderColor: "var(--state-error)" }}
+        style={{ background: "var(--error-bg-subtle)", borderColor: "var(--state-error)" }}
         role="alert"
       >
         {errorCode ? (

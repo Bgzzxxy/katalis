@@ -11,6 +11,7 @@ import { pingRedis } from "./db/redis";
 import type { RouterConfig } from "./services/upstream-router";
 import { billingRoutes } from "./routes/billing";
 import { webhooksQrisRoutes } from "./routes/webhooks-qris";
+import { modelsRoutes } from "./routes/models";
 import { telemetryRoutes } from "./routes/telemetry";
 import {
   createQrisProvider,
@@ -86,6 +87,8 @@ export function createApp(deps: AppDeps) {
   app.route("/v1", v1ProxyRoutes(db, redis, env, upstream));
   app.route("/api/billing", billingRoutes(db, redis, env, qris));
   app.route("/api/webhooks", webhooksQrisRoutes(db, redis, qris));
+
+  app.route("/api/models", modelsRoutes());
   app.route("/api/telemetry", telemetryRoutes(db, redis));
 
   return app;

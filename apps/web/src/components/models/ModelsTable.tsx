@@ -1,9 +1,9 @@
 import { Badge } from "../ui/Badge";
 import { Copy } from "lucide-react";
 import { POOL_LABELS, type ModelSpec } from "../../lib/model-catalog";
-import { formatIdr } from "../../lib/format";
+import { unlimitedDiscountApplies } from "../../lib/pricing";
 import { useToast } from "../../hooks/useToast";
-import { copyText } from "../../lib/format";
+import { copyText, formatIdr } from "../../lib/format";
 
 export function ModelsTable({
   models,
@@ -25,6 +25,9 @@ export function ModelsTable({
         <thead>
           <tr className="bg-canvas">
             <th className="border-b border-hairline px-3 py-2 text-left font-mono text-[11px] font-medium uppercase tracking-[0.05em] text-secondary">
+              Model
+            </th>
+            <th className="border-b border-hairline px-3 py-2 text-left font-mono text-[11px] font-medium uppercase tracking-[0.05em] text-secondary">
               ID Model
             </th>
             <th className="border-b border-hairline px-3 py-2 text-left font-mono text-[11px] font-medium uppercase tracking-[0.05em] text-secondary">
@@ -43,10 +46,15 @@ export function ModelsTable({
         </thead>
         <tbody>
           {models.map((model) => {
+            const discounted = unlimitedDiscountApplies(model, unlimitedDiscount);
             const inPrice = formatIdr(model.priceInIdrPer1M);
             const outPrice = formatIdr(model.priceOutIdrPer1M);
             return (
-              <tr key={model.id} className="border-b border-hairline last:border-b-0 hover:bg-[#F0EEE8]/60">
+              <tr key={model.id} className="border-b border-hairline last:border-b-0 hover:bg-canvas/60">
+                <td className="px-3 py-2">
+                  <div className="font-sans text-[13px] font-medium text-primary">{model.name}</div>
+                  <div className="text-[11px] text-secondary">{model.provider}</div>
+                </td>
                 <td className="px-3 py-2">
                   <button
                     type="button"
@@ -64,14 +72,14 @@ export function ModelsTable({
                   </Badge>
                 </td>
                 <td className="px-3 py-2 text-right font-mono tabular-nums text-primary">
-                  {unlimitedDiscount ? (
+                  {discounted ? (
                     <span className="text-accent"><s className="text-secondary">{inPrice}</s> {formatIdr(model.priceInIdrPer1M * 0.7)}</span>
                   ) : (
                     inPrice
                   )}
                 </td>
                 <td className="px-3 py-2 text-right font-mono tabular-nums text-primary">
-                  {unlimitedDiscount ? (
+                  {discounted ? (
                     <span className="text-accent"><s className="text-secondary">{outPrice}</s> {formatIdr(model.priceOutIdrPer1M * 0.7)}</span>
                   ) : (
                     outPrice

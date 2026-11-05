@@ -6,7 +6,7 @@ import { setupDom } from "../setup";
 setupDom();
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
-import { AppLayout } from "../../src/components/layout/AppLayout";
+import { DashboardLayout } from "../../src/components/layout/DashboardLayout";
 import { MonitorPage } from "../../src/pages/MonitorPage";
 import { ModelsPage } from "../../src/pages/ModelsPage";
 import { ToastProvider } from "../../src/hooks/useToast";
@@ -52,9 +52,9 @@ describe("QA FINDING: navbar connection dot contradicts Monitor status", () => {
       <ToastProvider>
         <AuthProvider>
           <MemoryRouter>
-            <AppLayout>
+            <DashboardLayout>
               <MonitorPage />
-            </AppLayout>
+            </DashboardLayout>
           </MemoryRouter>
         </AuthProvider>
       </ToastProvider>,

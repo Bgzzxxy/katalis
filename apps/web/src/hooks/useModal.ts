@@ -13,10 +13,14 @@ export function useModal<T extends HTMLElement>(onClose: () => void, active = tr
     if (!active) return;
     const restore = document.activeElement as HTMLElement | null;
     const container = ref.current;
-    const focusable = container?.querySelector<HTMLElement>(
-      "input,select,textarea,button,[href],[tabindex]:not([tabindex='-1'])",
-    );
-    (focusable ?? container)?.focus();
+    // Respect an element already focused inside (e.g. React `autoFocus`).
+    const alreadyFocused = container?.contains(document.activeElement) ?? false;
+    if (!alreadyFocused) {
+      const focusable = container?.querySelector<HTMLElement>(
+        "input,select,textarea,button,[href],[tabindex]:not([tabindex='-1'])",
+      );
+      (focusable ?? container)?.focus();
+    }
 
     function onKey(event: KeyboardEvent) {
       if (event.key === "Escape") {

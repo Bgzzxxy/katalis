@@ -61,14 +61,18 @@ Aturan-aturan di bawah ini bersifat **non-negotiable**. Setiap agent yang mengub
 
 ---
 
-## 5. Kepatuhan Desain Frontend (Design.md v2.1)
+## 5. Kepatuhan Desain Frontend (design.md v4.0)
 
-- Hanya **8 token warna** yang boleh dipakai (beserta turunan transparansi resminya):
-  `#F0EEE8` (canvas), `#FAF9F5` (surface), `#282824` (primary), `#B77A45` (accent), `#77746B` (secondary), `#DCD8CE` (border), `#54836A` (success), `#C45E52` (error).
+- Token warna **v4.0** (Warm Editorial Light default + Obsidian Carbon Dark `class="dark"`) — sumber: `stitch_katalis_design_system/warm_editorial_precision/DESIGN.md` & `obsidian_carbon_precision_dark_mode/DESIGN.md`:
+  - Surface: `#F0EEE8`/`#0D0D0C` canvas · `#FAF9F5`/`#1A1A17` surface · `#F3F1EB`/`#24231F` surface-hover · `#E6E2D8`/`#141412` secondary · `#282824`/`#090908` terminal.
+  - Text: `#282824`/`#F0EEE8` primary · `#77746B`/`#A39E93` secondary · `#6E6B62` secondary-aa · `#8C887E`/`#8A857A` muted.
+  - Accent: `#B77A45`/`#D4955A` graphic · `#8F5B2D`/`#D4955A` AA-text.
+  - State: success `#54836A`/`#68A382` (+text `#3D6B52`) · warning `#B5761E`/`#E0A346` (+text `#8C5E1A`) · error `#C45E52`/`#E07265` (+text `#A33E32`) · info `#3B6E8C`/`#5B9BD5`.
+  - Border: hairline `#DCD8CE`/`#2A2925` · strong `#B8B2A6`/`#42403A`.
 - **DILARANG**: warna Tailwind bawaan (`bg-indigo-*`, `bg-purple-*`, `bg-blue-*`, `bg-slate-*`, dll), gradasi dekoratif, blob kabur, glassmorphism berlebihan, ikon dekoratif (Sparkles/Rocket/Bot/Zap).
 - **`<svg>` dan `<img>`** dilarang di komponen src kecuali ikon fungsional (Lucide Copy/Plus/Search) dan QR code yang dihasilkan lokal.
 - `shadow-*` **HANYA** diizinkan pada overlay melayang: `CommandPalette.tsx`, `CreateKeyModal.tsx`, `SpendLimitModal.tsx`, `QrisModal.tsx`, `useToast.tsx`.
-- `backdrop-blur` **HANYA** diizinkan pada `Navbar.tsx`.
+- `backdrop-blur` **HANYA** diizinkan pada header sticky shell: `DashboardLayout.tsx`, `PublicLayout.tsx`, `LandingPage.tsx`.
 - **4 status data wajib** (Loading/Empty/Error/Populated) ditegakkan oleh `components/ui/DataState.tsx` — setiap komponen yang memuat data backend harus melalui komponen ini.
 - Angka dinamis **wajib** `tabular-nums` (dengan `slashed-zero`); angka Rupiah besar memakai format split-weight `Currency.tsx`.
 - **DILARANG menampilkan angka/tombol palsu** yang tidak terhubung ke state nyata.

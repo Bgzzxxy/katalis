@@ -14,6 +14,8 @@ import {
 
 const SPEC: ModelSpec = {
   id: "mock-model",
+  name: "Mock Model",
+  provider: "Mock",
   defaultPool: "STABLE",
   ownedBy: "katalis",
   priceInMicroPer1M: 1,

@@ -10,14 +10,41 @@ const SRC = join(import.meta.dir, "..", "..", "src");
 const INDEX_HTML = join(import.meta.dir, "..", "..", "index.html");
 
 const ALLOWED_HEX = new Set([
+  // Warm Editorial Light (default)
   "#F0EEE8",
   "#FAF9F5",
+  "#F3F1EB",
+  "#E6E2D8",
   "#282824",
-  "#B77A45",
-  "#77746B",
   "#DCD8CE",
+  "#B8B2A6",
+  "#77746B",
+  "#6E6B62",
+  "#8C887E",
+  "#B77A45",
+  "#8F5B2D",
   "#54836A",
+  "#3D6B52",
+  "#B5761E",
+  "#8C5E1A",
   "#C45E52",
+  "#A33E32",
+  "#3B6E8C",
+  // Obsidian Carbon Dark
+  "#0D0D0C",
+  "#1A1A17",
+  "#24231F",
+  "#141412",
+  "#090908",
+  "#2A2925",
+  "#42403A",
+  "#A39E93",
+  "#D4955A",
+  "#68A382",
+  "#E0A346",
+  "#E07265",
+  "#5B9BD5",
+  "#8A857A",
 ]);
 
 function walk(dir: string): string[] {
@@ -38,7 +65,7 @@ function hexes(text: string): string[] {
 }
 
 describe("QA design compliance: palette tokens", () => {
-  test("only the 8 approved hex tokens appear in source", () => {
+  test("only the approved v4.0 hex tokens appear in source", () => {
     const offenders: string[] = [];
     for (const [file, text] of sources) {
       for (const hex of hexes(text)) {
@@ -53,7 +80,8 @@ describe("QA design compliance: palette tokens", () => {
     for (const [file, text] of sources) {
       if (/gradient|\bblob\b/i.test(text)) offenders.push(file);
       const hasBlur = /backdrop-filter|\bblur\b/.test(text);
-      if (hasBlur && !file.endsWith("Navbar.tsx")) offenders.push(file);
+      const isShellHeader = file.endsWith("Layout.tsx") || file.endsWith("LandingPage.tsx");
+      if (hasBlur && !isShellHeader) offenders.push(file);
     }
     expect(offenders).toEqual([]);
   });

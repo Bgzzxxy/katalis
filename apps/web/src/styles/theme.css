@@ -18,28 +18,91 @@
   --color-secondary: var(--text-secondary);
   --color-hairline: var(--border-hairline);
   --color-success: var(--state-success);
+  --color-warning: var(--state-warning);
   --color-error: var(--state-error);
+  --color-info: var(--state-info);
+  --color-terminal: var(--bg-terminal);
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
   --font-serif: "Newsreader", Georgia, serif;
   --font-mono: "JetBrains Mono", monospace;
 }
 
+/* Warm Editorial Precision v4.0 — Light (default). */
 :root {
   --bg-canvas: #F0EEE8;
   --bg-surface: #FAF9F5;
-  --text-primary: #282824;
-  --accent-main: #B77A45;
-  --text-secondary: #77746B;
-  --border-hairline: #DCD8CE;
-  --state-success: #54836A;
-  --state-error: #C45E52;
+  --bg-surface-hover: #F3F1EB;
+  --bg-secondary: #E6E2D8;
+  --bg-terminal: #282824;
+  --text-terminal: #FAF9F5;
 
-  --accent-subtle: rgba(183, 122, 69, 0.12);
-  --accent-border: rgba(183, 122, 69, 0.30);
-  --success-subtle: rgba(84, 131, 106, 0.12);
-  --success-border: rgba(84, 131, 106, 0.30);
-  --error-subtle: rgba(196, 94, 82, 0.12);
-  --error-border: rgba(196, 94, 82, 0.30);
+  --border-hairline: #DCD8CE;
+  --border-strong: #B8B2A6;
+
+  --text-primary: #282824;
+  --text-secondary: #77746B;
+  --text-secondary-aa: #6E6B62;
+  --text-muted: #8C887E;
+
+  --accent-main: #B77A45;
+  --accent-text: #8F5B2D;
+  --state-success: #54836A;
+  --success-text: #3D6B52;
+  --state-warning: #B5761E;
+  --warning-text: #8C5E1A;
+  --state-error: #C45E52;
+  --error-text: #A33E32;
+  --state-info: #3B6E8C;
+
+  --accent-bg-subtle: rgba(183, 122, 69, 0.12);
+  --accent-border-subtle: rgba(183, 122, 69, 0.32);
+  --success-bg-subtle: rgba(84, 131, 106, 0.12);
+  --success-border-subtle: rgba(84, 131, 106, 0.32);
+  --warning-bg-subtle: rgba(181, 118, 30, 0.12);
+  --warning-border-subtle: rgba(181, 118, 30, 0.32);
+  --error-bg-subtle: rgba(196, 94, 82, 0.12);
+  --error-border-subtle: rgba(196, 94, 82, 0.32);
+  --info-bg-subtle: rgba(59, 110, 140, 0.12);
+  --info-border-subtle: rgba(59, 110, 140, 0.32);
+}
+
+/* Obsidian Carbon Precision v4.0 — Dark (`class="dark"` on <html>). */
+.dark {
+  --bg-canvas: #0D0D0C;
+  --bg-surface: #1A1A17;
+  --bg-surface-hover: #24231F;
+  --bg-secondary: #141412;
+  --bg-terminal: #090908;
+  --text-terminal: #FAF9F5;
+
+  --border-hairline: #2A2925;
+  --border-strong: #42403A;
+
+  --text-primary: #F0EEE8;
+  --text-secondary: #A39E93;
+  --text-secondary-aa: #A39E93;
+  --text-muted: #8A857A;
+
+  --accent-main: #D4955A;
+  --accent-text: #D4955A;
+  --state-success: #68A382;
+  --success-text: #68A382;
+  --state-warning: #E0A346;
+  --warning-text: #E0A346;
+  --state-error: #E07265;
+  --error-text: #8A857A;
+  --state-info: #5B9BD5;
+
+  --accent-bg-subtle: rgba(212, 149, 90, 0.12);
+  --accent-border-subtle: rgba(212, 149, 90, 0.32);
+  --success-bg-subtle: rgba(104, 163, 130, 0.12);
+  --success-border-subtle: rgba(104, 163, 130, 0.32);
+  --warning-bg-subtle: rgba(224, 163, 70, 0.12);
+  --warning-border-subtle: rgba(224, 163, 70, 0.32);
+  --error-bg-subtle: rgba(224, 114, 101, 0.12);
+  --error-border-subtle: rgba(224, 114, 101, 0.32);
+  --info-bg-subtle: rgba(91, 155, 213, 0.12);
+  --info-border-subtle: rgba(91, 155, 213, 0.32);
 }
 
 html,
@@ -78,9 +141,8 @@ kbd {
   font-variant-numeric: tabular-nums slashed-zero;
 }
 
-/* Keyboard-first surfaces (Command palette) need a visible focus ring without
-   introducing a colour outside the 8-token palette. */
-:focus-visible {
+/* Keyboard-first surfaces (Command palette, modals) need a visible focus ring. */
+::focus-visible {
   outline: 2px solid var(--accent-main);
   outline-offset: 1px;
 }

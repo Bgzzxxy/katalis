@@ -62,6 +62,8 @@ export function v1ProxyRoutes(
         object: "model",
         created: now,
         owned_by: model.ownedBy,
+        name: model.name,
+        provider: model.provider,
       })),
     });
   });

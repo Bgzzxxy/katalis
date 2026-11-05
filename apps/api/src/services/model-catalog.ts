@@ -2,6 +2,10 @@
 // upstream routing + pricing. Prices are expressed in micro-IDR (1e-6 IDR) per
 // 1,000,000 tokens so all cost math stays integer-exact.
 //
+// `name` and `provider` are presentation labels for the web UI; the web client
+// reads the live catalog from GET /api/models, so this file is the one place to
+// edit when a model or price changes.
+//
 // shortcut: prices are business assumptions (Prd §3) pending product sign-off,
 // and route order doubles as the failover order (no per-pool upstream split yet).
 
@@ -12,6 +16,10 @@ export type ModelRoute = { provider: ProviderId; upstreamModel: string };
 
 export type ModelSpec = {
   id: string;
+  /** Display name, e.g. "DeepSeek V4 Pro". */
+  name: string;
+  /** Model vendor, e.g. "DeepSeek" (not the gateway's upstream provider). */
+  provider: string;
   defaultPool: PoolTier;
   ownedBy: string;
   priceInMicroPer1M: number;
@@ -30,6 +38,8 @@ export function asPoolTier(value: string): PoolTier | null {
 export const MODEL_CATALOG: readonly ModelSpec[] = [
   {
     id: "deepseek-v4-pro",
+    name: "DeepSeek V4 Pro",
+    provider: "DeepSeek",
     defaultPool: "STABLE",
     ownedBy: "katalis",
     priceInMicroPer1M: 27_000_000,
@@ -42,6 +52,8 @@ export const MODEL_CATALOG: readonly ModelSpec[] = [
   },
   {
     id: "deepseek-v4.1-flash",
+    name: "DeepSeek V4.1 Flash",
+    provider: "DeepSeek",
     defaultPool: "STABLE",
     ownedBy: "katalis",
     priceInMicroPer1M: 9_000_000,
@@ -54,6 +66,8 @@ export const MODEL_CATALOG: readonly ModelSpec[] = [
   },
   {
     id: "qwen3-max",
+    name: "Qwen3 Max",
+    provider: "Alibaba",
     defaultPool: "STABLE",
     ownedBy: "katalis",
     priceInMicroPer1M: 16_000_000,
@@ -65,6 +79,8 @@ export const MODEL_CATALOG: readonly ModelSpec[] = [
   },
   {
     id: "glm-5.3-flash",
+    name: "GLM 5.3 Flash",
+    provider: "Zhipu",
     defaultPool: "FLEX",
     ownedBy: "katalis",
     priceInMicroPer1M: 2_000_000,
@@ -76,6 +92,8 @@ export const MODEL_CATALOG: readonly ModelSpec[] = [
   },
   {
     id: "glm-4.6v",
+    name: "GLM 4.6V",
+    provider: "Zhipu",
     defaultPool: "STABLE",
     ownedBy: "katalis",
     priceInMicroPer1M: 5_000_000,
@@ -87,6 +105,8 @@ export const MODEL_CATALOG: readonly ModelSpec[] = [
   },
   {
     id: "kimi-k2",
+    name: "Kimi K2",
+    provider: "Moonshot",
     defaultPool: "STABLE",
     ownedBy: "katalis",
     priceInMicroPer1M: 12_000_000,
@@ -98,6 +118,8 @@ export const MODEL_CATALOG: readonly ModelSpec[] = [
   },
   {
     id: "doubao-pro",
+    name: "Doubao Pro",
+    provider: "ByteDance",
     defaultPool: "FLEX",
     ownedBy: "katalis",
     priceInMicroPer1M: 1_000_000,
@@ -109,6 +131,8 @@ export const MODEL_CATALOG: readonly ModelSpec[] = [
   },
   {
     id: "hunyuan-lora-coder",
+    name: "Hunyuan LoRA Coder",
+    provider: "Tencent",
     defaultPool: "LORA",
     ownedBy: "katalis",
     priceInMicroPer1M: 3_000_000,
@@ -119,6 +143,25 @@ export const MODEL_CATALOG: readonly ModelSpec[] = [
     ],
   },
 ];
+
+/** Client-facing capability annotations. Only documented ones are listed, so
+ *  the UI never renders a filter chip the gateway cannot honour. */
+export type Capability = "Reasoning" | "Vision" | "Tools";
+
+const CAPABILITIES: Record<string, Capability[]> = {
+  "deepseek-v4-pro": ["Reasoning", "Tools"],
+  "deepseek-v4.1-flash": ["Reasoning", "Tools"],
+  "qwen3-max": ["Reasoning", "Tools"],
+  "glm-5.3-flash": [],
+  "glm-4.6v": ["Vision"],
+  "kimi-k2": ["Tools"],
+  "doubao-pro": [],
+  "hunyuan-lora-coder": ["Tools"],
+};
+
+export function capabilitiesOf(id: string): Capability[] {
+  return CAPABILITIES[id] ?? [];
+}
 
 export function findModel(id: string): ModelSpec | undefined {
   return MODEL_CATALOG.find((model) => model.id === id);

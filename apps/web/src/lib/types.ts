@@ -48,6 +48,12 @@ export type Telemetry = {
   window: Array<{ t: number; tokens: number; requests: number }>;
 };
 
+export type DailyUsage = {
+  date: string;
+  tokens_used: number;
+  amount_spent_idr: number;
+};
+
 export type OPENAI_ERROR_SHAPE = {
   error: { message: string; type: string; param: string | null; code: string };
 };

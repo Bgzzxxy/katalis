@@ -5,6 +5,7 @@ import type { Db } from "../db";
 import type { AppEnv } from "../env";
 import type { QrisProvider } from "../services/qris-provider";
 import { createInvoice, getInvoiceStatus } from "../services/qris.service";
+import { getDailyUsage } from "../services/usage.service";
 import { sessionAuth, type SessionVariables } from "../middleware/session-auth";
 import { AppError } from "../middleware/error-handler";
 
@@ -65,6 +66,12 @@ export function billingRoutes(
     const id = c.req.param("id");
     const status = await getInvoiceStatus(db, c.get("user").id, id);
     return c.json(status, 200);
+  });
+
+
+  app.get("/usage", sessionAuth(env.JWT_SECRET), async (c) => {
+    const usage = await getDailyUsage(db, c.get("user").id);
+    return c.json(usage, 200);
   });
 
   return app;
