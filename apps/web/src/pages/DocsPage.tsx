@@ -121,7 +121,7 @@ export function DocsPage() {
         </nav>
 
         <div className="space-y-4">
-          <Panel title={activeSection.label}>
+          <Panel>
             <h2 className="font-serif text-lg font-medium tracking-tight text-primary">
               {activeSection.label}
             </h2>

@@ -31,7 +31,7 @@ export function CommandPaletteTrigger() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="hidden items-center gap-1.5 rounded border border-hairline px-2 py-1 font-sans text-xs text-secondary hover:border-accent hover:text-primary lg:inline-flex"
+        className="hidden shrink-0 items-center gap-1.5 whitespace-nowrap rounded border border-hairline px-2 py-1 font-sans text-xs text-secondary hover:border-accent hover:text-primary lg:inline-flex"
         aria-label="Buka command palette"
       >
         <Search className="h-3 w-3" aria-hidden="true" />
