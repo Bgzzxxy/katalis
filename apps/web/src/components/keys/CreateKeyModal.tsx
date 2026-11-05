@@ -1,4 +1,5 @@
 import { useId, useState } from "react";
+import { Copy, Plus } from "lucide-react";
 import { Button } from "../ui/Button";
 import { useModal } from "../../hooks/useModal";
 import { useToast } from "../../hooks/useToast";
@@ -54,7 +55,7 @@ export function CreateKeyModal({
       <div
         ref={dialogRef}
         tabIndex={-1}
-        className="w-full max-w-md rounded-md border border-hairline bg-surface p-4 outline-none"
+        className="w-full max-w-md rounded-md border border-hairline bg-surface p-4 shadow-xl outline-none"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -81,8 +82,9 @@ export function CreateKeyModal({
             {error ? <p className="mt-2 font-mono text-[11px] text-error">{error}</p> : null}
             <div className="mt-4 flex justify-end gap-2">
               <Button onClick={handleClose}>Batal</Button>
-              <Button variant="primary" onClick={() => void handleCreate()} disabled={busy}>
-                {busy ? "Memproses..." : "Buat API Key"}
+              <Button variant="primary" onClick={() => void handleCreate()} disabled={busy} className="inline-flex items-center gap-1.5">
+                <Plus className="h-3.5 w-3.5" aria-hidden="true" />
+                <span>{busy ? "Memproses..." : "Buat API Key"}</span>
               </Button>
             </div>
           </>
@@ -105,8 +107,9 @@ export function CreateKeyModal({
               {created.key}
             </div>
             <div className="mt-4 flex justify-end gap-2">
-              <Button variant="primary" onClick={() => void copyKey()}>
-                Salin Key
+              <Button variant="primary" onClick={() => void copyKey()} className="inline-flex items-center gap-1.5">
+                <Copy className="h-3.5 w-3.5" aria-hidden="true" />
+                <span>Salin Key</span>
               </Button>
               <Button onClick={handleClose}>Tutup</Button>
             </div>

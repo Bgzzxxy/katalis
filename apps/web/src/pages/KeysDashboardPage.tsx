@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "../components/ui/Button";
 import { Badge } from "../components/ui/Badge";
 import { DataState } from "../components/ui/DataState";
-import { MetricCard } from "../components/ui/MetricCard";
+import { Currency } from "../components/ui/Currency";
 import { useAuth } from "../hooks/useAuth";
 import { useKeys } from "../hooks/useKeys";
 import { useToast } from "../hooks/useToast";
@@ -29,9 +29,9 @@ export function KeysDashboardPage() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-base font-semibold text-primary" style={{ letterSpacing: "-0.01em" }}>
+        <h1 className="font-serif text-[22px] leading-7 font-medium tracking-[-0.015em] text-primary">
           Dashboard Key
         </h1>
         <Button variant="primary" onClick={() => setShowCreate(true)}>
@@ -39,13 +39,24 @@ export function KeysDashboardPage() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-        <MetricCard label="Sisa Saldo Dompet" value={formatIdr(user?.wallet_balance_idr ?? 0)} tone="success" />
-        <MetricCard
-          label="Status Paket Unlimited"
-          value={user?.unlimited_expires_at ? formatDateTime(user.unlimited_expires_at) : "—"}
-          tone={user?.unlimited_expires_at ? "accent" : "primary"}
-        />
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+        <div className="rounded-md border border-hairline bg-surface p-3">
+          <p className="font-serif text-lg font-medium text-primary">Sisa Saldo</p>
+          <div className="mt-1">
+            <Currency amount={user?.wallet_balance_idr ?? 0} tone="success" large />
+          </div>
+        </div>
+        <div className="rounded-md border border-hairline bg-surface p-3">
+          <p className="font-serif text-lg font-medium text-primary">Status Paket Unlimited</p>
+          <div className="mt-1 flex items-center justify-between">
+            <span className="font-mono text-[13px] tabular-nums text-primary">
+              {user?.unlimited_expires_at ? formatDateTime(user.unlimited_expires_at) : "—"}
+            </span>
+            <Badge tone={user?.unlimited_expires_at ? "accent" : "secondary"}>
+              {user?.unlimited_expires_at ? "UNLIMITED 10 HARI" : "PAY-AS-YOU-GO"}
+            </Badge>
+          </div>
+        </div>
         {/* shortcut: the third §5.4 card needs a backend daily-allowance field that does not exist yet; a fabricated value would violate Design.md §1, so it is omitted. */}
       </div>
 
@@ -73,7 +84,7 @@ export function KeysDashboardPage() {
             <tbody>
               {keys.map((key) => (
                 <tr key={key.id} className="border-b border-hairline last:border-b-0 hover:bg-[#F0EEE8]/60">
-                  <td className="px-3 py-2 font-medium text-primary">{key.name}</td>
+                  <td className="px-3 py-2 font-sans font-medium text-primary">{key.name}</td>
                   <td className="px-3 py-2 font-mono text-[12px] text-secondary">{key.key_prefix}…</td>
                   <td className="px-3 py-2 text-right font-mono tabular-nums text-primary">
                     {formatIdr(key.spent_idr)}
@@ -88,8 +99,8 @@ export function KeysDashboardPage() {
                     {formatDateTime(key.last_used_at)}
                   </td>
                   <td className="px-3 py-2">
-                    <Badge tone={key.is_active ? "success" : "error"}>
-                      {key.is_active ? "AKTIF" : "PAUSED"}
+                    <Badge tone={key.is_active ? "success" : "secondary"}>
+                      {key.is_active ? "AKTIF" : "DIBEKUKAN"}
                     </Badge>
                   </td>
                   <td className="px-3 py-2">

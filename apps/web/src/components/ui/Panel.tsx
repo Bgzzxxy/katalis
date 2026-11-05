@@ -16,7 +16,7 @@ export function Panel({
     <section className={`rounded-md border border-hairline bg-surface p-3 ${className}`}>
       {title ? (
         <header className="mb-3 flex items-center justify-between">
-          <h2 className="text-[11px] font-semibold uppercase tracking-[0.05em] text-secondary">
+          <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.06em] text-balance text-secondary">
             {title}
           </h2>
           {action}

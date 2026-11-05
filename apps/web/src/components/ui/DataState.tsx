@@ -45,12 +45,14 @@ export function DataState({
   if (state === "empty") {
     return (
       <div className="flex flex-col items-center gap-3 rounded-md border border-dashed border-hairline px-4 py-8 text-center">
-        <p className="text-[13px] text-secondary">{emptyLabel}</p>
+        <p className="font-serif text-lg font-medium text-balance text-primary">
+          {emptyLabel}
+        </p>
         {emptyAction ? (
           <button
             type="button"
             onClick={emptyAction.onClick}
-            className="rounded bg-primary px-3 py-1.5 font-mono text-[11px] text-surface"
+            className="rounded bg-primary px-3 py-1.5 font-sans text-xs font-medium text-surface"
           >
             {emptyAction.label}
           </button>
@@ -72,12 +74,12 @@ export function DataState({
             {errorCode}
           </p>
         ) : null}
-        <p className="mt-1 text-[13px] text-primary">{errorMessage ?? "Terjadi kesalahan"}</p>
+        <p className="mt-1 text-[13px] text-pretty text-primary">{errorMessage ?? "Terjadi kesalahan"}</p>
         {onRetry ? (
           <button
             type="button"
             onClick={onRetry}
-            className="mt-3 rounded border border-primary bg-surface px-3 py-1.5 font-mono text-[11px] text-primary"
+            className="mt-3 rounded border border-primary bg-surface px-3 py-1.5 font-sans text-xs font-medium text-primary"
           >
             Coba Lagi
           </button>

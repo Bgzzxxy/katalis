@@ -2,7 +2,8 @@ import { useEffect, useId, useRef, useState } from "react";
 import QRCode from "qrcode";
 import { Button } from "../ui/Button";
 import { useModal } from "../../hooks/useModal";
-import { formatCountdown, formatIdr } from "../../lib/format";
+import { formatCountdown } from "../../lib/format";
+import { Currency } from "../ui/Currency";
 import type { InvoiceStatusView, InvoiceView } from "../../lib/types";
 
 const TERMINAL = new Set(["PAID", "EXPIRED", "FAILED"]);
@@ -89,7 +90,7 @@ export function QrisModal({
       <div
         ref={dialogRef}
         tabIndex={-1}
-        className="w-full max-w-md rounded-md border border-hairline bg-surface p-5 outline-none"
+        className="w-full max-w-md rounded-md border border-hairline bg-surface p-5 shadow-xl outline-none"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -147,9 +148,9 @@ export function QrisModal({
                 <p className="text-[11px] font-semibold uppercase tracking-[0.05em] text-secondary">
                   Total Bayar
                 </p>
-                <p className="font-mono text-xl font-semibold tabular-nums text-primary">
-                  {formatIdr(invoice.total_pay_idr)}
-                </p>
+                <div className="mt-1">
+                  <Currency amount={invoice.total_pay_idr} large />
+                </div>
               </div>
               <div className="text-right">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.05em] text-secondary">

@@ -1,4 +1,5 @@
 import { Badge } from "../ui/Badge";
+import { Copy } from "lucide-react";
 import { POOL_LABELS, type ModelSpec } from "../../lib/model-catalog";
 import { formatIdr } from "../../lib/format";
 import { useToast } from "../../hooks/useToast";
@@ -51,9 +52,10 @@ export function ModelsTable({
                     type="button"
                     onClick={() => void copyModelId(model.id)}
                     title="Salin ID model"
-                    className="rounded border border-hairline bg-canvas px-2 py-0.5 font-mono text-[12px] text-primary hover:border-accent"
+                    className="inline-flex items-center gap-1.5 rounded border border-hairline bg-canvas px-2 py-0.5 font-mono text-[12px] text-primary hover:border-accent"
                   >
                     {model.id}
+                    <Copy className="h-3 w-3 text-secondary" aria-hidden="true" />
                   </button>
                 </td>
                 <td className="px-3 py-2">

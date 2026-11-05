@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Button } from "../ui/Button";
-import { Badge } from "../ui/Badge";
 import { formatIdr } from "../../lib/format";
 
 export type Plan = {
@@ -36,6 +35,13 @@ export const PLANS: Plan[] = [
   },
 ];
 
+const PREPAID_QUICK_AMOUNTS = [10_000, 25_000, 50_000, 100_000, 250_000];
+
+const BADGE_LABEL: Record<NonNullable<Plan["badge"]>, string> = {
+  accent: "TRIAL",
+  success: "POPULER",
+};
+
 export function PlanSelector({
   pending,
   onCheckout,
@@ -65,12 +71,16 @@ export function PlanSelector({
             />
             <span>
               <span className="flex items-center gap-2">
-                <span className="font-sans text-[13px] font-medium text-primary">{plan.label}</span>
+                <span className="font-serif text-lg font-medium text-primary">{plan.label}</span>
                 {plan.badge ? (
-                  <Badge tone={plan.badge}>{plan.badge === "accent" ? "TRIAL" : "BEST VALUE"}</Badge>
+                  <BadgeSimplified tone={plan.badge}>
+                    {BADGE_LABEL[plan.badge]}
+                  </BadgeSimplified>
                 ) : null}
               </span>
-              <span className="block text-[11px] text-secondary">{plan.description}</span>
+              <span className="block text-[13px] text-pretty text-secondary">
+                {plan.description}
+              </span>
             </span>
           </span>
           <span className="font-mono text-[13px] font-semibold tabular-nums text-primary">
@@ -80,17 +90,35 @@ export function PlanSelector({
       ))}
 
       {selected === "PREPAID" ? (
-        <label className="flex flex-col gap-1 text-[11px] font-semibold uppercase tracking-[0.05em] text-secondary">
-          Nominal isi ulang (Rp)
-          <input
-            type="number"
-            min={5000}
-            max={1000000}
-            className="rounded border border-hairline bg-surface px-2 py-1.5 font-mono text-[13px] tabular-nums text-primary outline-none focus:border-accent"
-            value={customAmount}
-            onChange={(e) => setCustomAmount(Math.max(0, Number(e.target.value) || 0))}
-          />
-        </label>
+        <div className="space-y-2">
+          <div className="flex flex-wrap gap-1.5">
+            {PREPAID_QUICK_AMOUNTS.map((amount) => (
+              <button
+                key={amount}
+                type="button"
+                onClick={() => setCustomAmount(amount)}
+                className={`rounded border px-2 py-1 font-sans text-xs ${
+                  customAmount === amount
+                    ? "border-accent bg-[var(--accent-subtle)] text-accent"
+                    : "border-hairline text-secondary hover:border-accent hover:text-primary"
+                }`}
+              >
+                {formatIdr(amount)}
+              </button>
+            ))}
+          </div>
+          <label className="flex flex-col gap-1 text-[11px] font-semibold uppercase tracking-[0.05em] text-secondary">
+            Nominal isi ulang (Rp)
+            <input
+              type="number"
+              min={5000}
+              max={1000000}
+              className="rounded border border-hairline bg-surface px-2 py-1.5 font-mono text-[13px] tabular-nums text-primary outline-none focus:border-accent"
+              value={customAmount}
+              onChange={(e) => setCustomAmount(Math.max(0, Number(e.target.value) || 0))}
+            />
+          </label>
+        </div>
       ) : null}
 
       <Button
@@ -108,5 +136,22 @@ export function PlanSelector({
         {pending ? "Membuat tagihan..." : "Buat Tagihan QRIS"}
       </Button>
     </div>
+  );
+}
+
+// Small local copy avoids exporting an internal layout detail from ui/Badge.
+function BadgeSimplified({ tone, children }: { tone: "accent" | "success"; children: string }) {
+  return (
+    <span
+      className="rounded border px-1.5 py-0.5 font-mono text-[10px] font-medium"
+      style={{
+        color: tone === "accent" ? "var(--accent-main)" : "var(--state-success)",
+        borderColor:
+          tone === "accent" ? "var(--accent-border)" : "var(--success-border)",
+        background: tone === "accent" ? "var(--accent-subtle)" : "var(--success-subtle)",
+      }}
+    >
+      {children}
+    </span>
   );
 }

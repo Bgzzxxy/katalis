@@ -5,6 +5,10 @@
 @import "@fontsource/jetbrains-mono/400.css";
 @import "@fontsource/jetbrains-mono/500.css";
 @import "@fontsource/jetbrains-mono/600.css";
+@import "@fontsource/newsreader/400.css";
+@import "@fontsource/newsreader/400-italic.css";
+@import "@fontsource/newsreader/500.css";
+@import "@fontsource/newsreader/600.css";
 
 @theme inline {
   --color-canvas: var(--bg-canvas);
@@ -16,6 +20,7 @@
   --color-success: var(--state-success);
   --color-error: var(--state-error);
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-serif: "Newsreader", Georgia, serif;
   --font-mono: "JetBrains Mono", monospace;
 }
 
@@ -50,7 +55,27 @@ body {
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: 13px;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+.font-editorial {
+  font-family: var(--font-serif);
+  text-wrap: balance;
+}
+
+.font-mono,
+code,
+pre,
+kbd {
+  font-variant-ligatures: none;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums slashed-zero;
 }
 
 /* Keyboard-first surfaces (Command palette) need a visible focus ring without

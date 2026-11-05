@@ -17,7 +17,7 @@ export function Button({
   return (
     <button
       {...rest}
-      className={`rounded px-3 py-1.5 font-mono text-[11px] disabled:opacity-50 ${VARIANT_CLASS[variant]} ${className}`}
+      className={`rounded px-3 py-1.5 font-sans text-xs font-medium disabled:opacity-50 ${VARIANT_CLASS[variant]} ${className}`}
     >
       {children}
     </button>

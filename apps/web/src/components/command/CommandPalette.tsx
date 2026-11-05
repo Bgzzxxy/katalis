@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Search } from "lucide-react";
 import { MODEL_CATALOG } from "../../lib/model-catalog";
 
 export type PaletteAction = { id: string; label: string; hint?: string; run: () => void };
@@ -30,10 +31,12 @@ export function CommandPaletteTrigger() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="hidden rounded border border-hairline px-2 py-1 font-mono text-[11px] text-secondary hover:border-accent lg:inline"
+        className="hidden items-center gap-1.5 rounded border border-hairline px-2 py-1 font-sans text-xs text-secondary hover:border-accent hover:text-primary lg:inline-flex"
         aria-label="Buka command palette"
       >
-        Cari model... ⌘K
+        <Search className="h-3 w-3" aria-hidden="true" />
+        <span>Cari model...</span>
+        <kbd className="rounded border border-hairline bg-canvas px-1 font-mono text-[10px]">⌘K</kbd>
       </button>
       {open ? <CommandPalette onClose={() => setOpen(false)} /> : null}
     </>
@@ -84,14 +87,17 @@ export function CommandPalette({ onClose }: { onClose: () => void }) {
         role="dialog"
         aria-label="Command palette"
       >
-        <input
-          autoFocus
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Cari halaman atau model..."
-          aria-label="Cari halaman atau model"
-          className="w-full border-b border-hairline bg-surface px-3 py-2 font-sans text-[13px] text-primary outline-none"
-        />
+        <div className="relative border-b border-hairline">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-secondary" aria-hidden="true" />
+          <input
+            autoFocus
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Cari model atau halaman..."
+            aria-label="Cari halaman atau model"
+            className="w-full bg-surface py-2 pl-8 pr-3 font-sans text-[13px] text-primary outline-none"
+          />
+        </div>
         <ul className="max-h-80 overflow-y-auto">
           {filtered.length === 0 ? (
             <li className="px-3 py-3 text-[13px] text-secondary">Tidak ada hasil</li>

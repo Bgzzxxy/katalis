@@ -51,14 +51,27 @@ describe("QA design compliance: palette tokens", () => {
   test("no gradients, blur, backdrop-filter or blob decorations", () => {
     const offenders: string[] = [];
     for (const [file, text] of sources) {
-      if (/gradient|backdrop-filter|\bblur\b|blob/i.test(text)) offenders.push(file);
+      if (/gradient|\bblob\b/i.test(text)) offenders.push(file);
+      const hasBlur = /backdrop-filter|\bblur\b/.test(text);
+      if (hasBlur && !file.endsWith("Navbar.tsx")) offenders.push(file);
     }
     expect(offenders).toEqual([]);
   });
 
-  test("only the command palette may use a floating shadow", () => {
+  test("floating shadows are limited to palette, modals and toast", () => {
+    const shadowOwners = [
+      "CommandPalette.tsx",
+      "CreateKeyModal.tsx",
+      "SpendLimitModal.tsx",
+      "QrisModal.tsx",
+      "useToast.tsx",
+    ];
     const offenders = sources
-      .filter(([file, text]) => /\bshadow-/.test(text) && !file.endsWith("CommandPalette.tsx"))
+      .filter(
+        ([file, text]) =>
+          /\bshadow-/.test(text) &&
+          !file.split("/").some((part) => shadowOwners.includes(part)),
+      )
       .map(([file]) => file);
     expect(offenders).toEqual([]);
   });

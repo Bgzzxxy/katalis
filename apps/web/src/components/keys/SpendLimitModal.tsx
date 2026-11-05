@@ -49,7 +49,7 @@ export function SpendLimitModal({
       <div
         ref={dialogRef}
         tabIndex={-1}
-        className="w-full max-w-sm rounded-md border border-hairline bg-surface p-4 outline-none"
+        className="w-full max-w-sm rounded-md border border-hairline bg-surface p-4 shadow-xl outline-none"
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"

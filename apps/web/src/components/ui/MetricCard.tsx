@@ -20,12 +20,12 @@ export function MetricCard({
 
   return (
     <div className="rounded-md border border-hairline bg-surface p-3">
-      <p className="text-[11px] font-semibold uppercase tracking-[0.05em] text-secondary">
+      <p className="font-mono text-[11px] font-semibold uppercase tracking-[0.06em] text-balance text-secondary">
         {label}
       </p>
-      <p className={`mt-1 font-mono text-xl font-semibold tabular-nums ${toneClass}`}>
+      <p className={`mt-1 font-mono text-[22px] leading-7 font-semibold tracking-tight tabular-nums ${toneClass}`}>
         {value}
-        {unit ? <span className="ml-1 text-[11px] text-secondary">{unit}</span> : null}
+        {unit ? <span className="ml-1 text-[11px] font-medium text-secondary">{unit}</span> : null}
       </p>
     </div>
   );

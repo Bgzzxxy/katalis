@@ -37,7 +37,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           <div
             key={t.id}
             role="status"
-            className="rounded border bg-surface px-3 py-2 font-mono text-[11px]"
+            className="rounded border bg-surface px-3 py-2 font-mono text-[11px] shadow-lg"
             style={{
               borderColor: t.tone === "error" ? "var(--state-error)" : "var(--border-hairline)",
               color: t.tone === "error" ? "var(--state-error)" : "var(--text-primary)",

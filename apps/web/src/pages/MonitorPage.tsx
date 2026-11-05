@@ -11,9 +11,9 @@ export function MonitorPage() {
   const { status, data, error, refresh } = useTelemetry();
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-base font-semibold text-primary" style={{ letterSpacing: "-0.01em" }}>
-        Monitor
+    <div className="space-y-6">
+      <h1 className="font-serif text-[22px] leading-7 font-medium tracking-[-0.015em] text-primary">
+        Real-time Gateway Telemetry
       </h1>
 
       <DataState
@@ -44,7 +44,7 @@ function MonitorContent({ telemetry }: { telemetry: Telemetry }) {
         <MetricCard
           label="Request / Detik"
           value={formatNumber(telemetry.requests_per_second)}
-          unit="req/detik"
+          unit="req/s"
           tone="accent"
         />
         <MetricCard

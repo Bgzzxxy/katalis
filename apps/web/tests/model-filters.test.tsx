@@ -49,6 +49,8 @@ describe("ModelFilters", () => {
     const { container } = render(
       <ModelFilters value={{ pool: "ALL", capability: null, query: "" }} onChange={noop} />,
     );
-    expect(container.querySelectorAll("svg").length).toBe(0);
+    // v2.1: the search field carries one functional Search icon (lucide-react),
+    // not decorative svg spam.
+    expect(container.querySelectorAll("svg").length).toBe(1);
   });
 });

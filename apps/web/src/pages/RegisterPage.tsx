@@ -38,10 +38,10 @@ export function RegisterPage() {
 
   return (
     <div className="mx-auto max-w-md px-4 py-10">
-      <h1 className="text-base font-semibold text-primary" style={{ letterSpacing: "-0.01em" }}>
+      <h1 className="font-serif text-[22px] leading-7 font-medium tracking-[-0.015em] text-primary">
         Daftar
       </h1>
-      <p className="mt-1 text-[13px] text-secondary">
+      <p className="mt-1 text-sm leading-[22px] text-pretty text-secondary">
         Buat akun member untuk mengelola API key dan saldo.
       </p>
 

@@ -8,6 +8,8 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
+    // Bind all interfaces so the UI can be opened from another device on the LAN.
+    host: true,
     proxy: {
       "/api": { target: "http://127.0.0.1:3000", changeOrigin: true },
       "/v1": { target: "http://127.0.0.1:3000", changeOrigin: true },

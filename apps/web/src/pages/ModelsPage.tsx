@@ -56,8 +56,8 @@ function ModelsPageBody({ query }: { query: string }) {
   }
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-base font-semibold text-primary" style={{ letterSpacing: "-0.01em" }}>
+    <div className="space-y-6">
+      <h1 className="font-serif text-[22px] leading-7 font-medium tracking-[-0.015em] text-primary">
         Katalog Model
       </h1>
 
@@ -80,7 +80,7 @@ function ModelsPageBody({ query }: { query: string }) {
       <Panel
         title="Kalkulator Biaya"
         action={
-          <label className="flex items-center gap-2 font-mono text-[11px] text-secondary">
+          <label className="flex items-center gap-2 font-sans text-xs text-secondary">
             <input
               type="checkbox"
               checked={unlimitedDiscount}

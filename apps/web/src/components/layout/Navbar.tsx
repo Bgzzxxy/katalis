@@ -1,8 +1,10 @@
 import { NavLink } from "react-router-dom";
+import { Copy } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import { useToast } from "../../hooks/useToast";
-import { copyText, formatIdr, formatLatency } from "../../lib/format";
+import { copyText, formatLatency } from "../../lib/format";
 import { CommandPaletteTrigger } from "../command/CommandPalette";
+import { Currency } from "../ui/Currency";
 
 const TABS = [
   { to: "/monitor", label: "Monitor" },
@@ -32,13 +34,15 @@ export function Navbar({
   const connected = connectionOk && latencyMs !== -1;
 
   return (
-    <header className="sticky top-0 z-30 border-b border-hairline bg-surface">
+    <header className="sticky top-0 z-30 border-b border-hairline bg-surface/95 backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-7xl items-center gap-4 px-4 md:px-6">
         <div className="flex items-center gap-2">
-          <span className="grid h-7 w-7 place-items-center rounded bg-primary font-mono text-[12px] font-semibold text-surface">
+          <span className="grid h-7 w-7 place-items-center rounded bg-primary font-mono text-[12px] font-bold text-surface">
             KT
           </span>
-          <span className="font-sans text-[14px] font-semibold text-primary">katalis</span>
+          <span className="font-serif text-base font-semibold tracking-tight text-primary">
+            katalis
+          </span>
           <span className="hidden rounded border border-hairline bg-canvas px-1.5 py-0.5 font-mono text-[10px] text-secondary sm:inline">
             GATEWAY
           </span>
@@ -52,7 +56,7 @@ export function Navbar({
                 background: connected ? "var(--state-success)" : "var(--state-error)",
               }}
             />
-            <span className="font-mono text-[11px] text-secondary">
+            <span className={`font-mono text-[11px] tabular-nums ${connected ? "text-success" : "text-error"}`}>
               {connected ? `Terhubung · ${formatLatency(latencyMs)}` : "Koneksi Terputus"}
             </span>
           </div>
@@ -64,8 +68,10 @@ export function Navbar({
               key={tab.to}
               to={tab.to}
               className={({ isActive }) =>
-                `rounded px-3 py-1.5 font-sans text-[13px] ${
-                  isActive ? "bg-primary text-surface" : "text-secondary hover:bg-canvas"
+                `rounded px-3 py-1.5 font-sans text-xs ${
+                  isActive
+                    ? "bg-primary font-medium text-surface"
+                    : "text-secondary hover:text-primary hover:bg-canvas"
                 }`
               }
             >
@@ -80,20 +86,19 @@ export function Navbar({
           <button
             type="button"
             onClick={copyBaseUrl}
-            className="hidden rounded border border-hairline px-2 py-1 font-mono text-[11px] text-secondary hover:border-accent sm:inline"
+            className="hidden items-center gap-1.5 rounded border border-hairline px-2.5 py-1 font-mono text-[11px] text-secondary hover:border-accent sm:inline-flex"
             title="Salin Base URL"
           >
-            {BASE_URL}
+            <span className="tabular-nums">{BASE_URL}</span>
+            <Copy className="h-3 w-3" aria-hidden="true" />
           </button>
 
           {user ? (
-            <span className="font-mono text-[13px] font-semibold tabular-nums text-success">
-              {formatIdr(user.wallet_balance_idr)}
-            </span>
+            <Currency amount={user.wallet_balance_idr} tone="success" />
           ) : (
             <NavLink
               to="/auth/login"
-              className="rounded bg-primary px-3 py-1.5 font-mono text-[11px] text-surface"
+              className="rounded bg-primary px-3 py-1.5 font-sans text-xs font-medium text-surface"
             >
               Masuk
             </NavLink>
@@ -107,8 +112,10 @@ export function Navbar({
             key={tab.to}
             to={tab.to}
             className={({ isActive }) =>
-              `shrink-0 rounded px-3 py-1.5 font-sans text-[13px] ${
-                isActive ? "bg-primary text-surface" : "text-secondary"
+              `shrink-0 rounded px-3 py-1.5 font-sans text-xs ${
+                isActive
+                  ? "bg-primary font-medium text-surface"
+                  : "text-secondary hover:text-primary hover:bg-canvas"
               }`
             }
           >

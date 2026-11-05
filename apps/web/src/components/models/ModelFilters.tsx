@@ -1,4 +1,5 @@
 import type { Capability, PoolTier } from "../../lib/model-catalog";
+import { Search } from "lucide-react";
 
 export type ModelFilterValue = {
   pool: PoolTier | "ALL";
@@ -31,23 +32,26 @@ export function ModelFilters({
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <input
-        aria-label="Cari model"
-        className="rounded border border-hairline bg-surface px-2 py-1.5 font-sans text-[13px] text-primary outline-none focus:border-accent"
-        placeholder="Cari model..."
-        value={value.query}
-        onChange={(e) => onChange({ ...value, query: e.target.value })}
-      />
+      <div className="relative">
+        <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-secondary" aria-hidden="true" />
+        <input
+          aria-label="Cari model"
+          className="rounded border border-hairline bg-surface py-1.5 pl-7 pr-2 font-sans text-[13px] text-primary outline-none focus:border-accent"
+          placeholder="Cari model..."
+          value={value.query}
+          onChange={(e) => onChange({ ...value, query: e.target.value })}
+        />
+      </div>
       <div className="flex items-center gap-1">
         {POOL_CHIPS.map((chip) => (
           <button
             key={chip.value}
             type="button"
             onClick={() => setPool(chip.value)}
-            className={`rounded px-2 py-1 font-mono text-[11px] ${
+            className={`rounded px-2 py-1 font-sans text-xs ${
               value.pool === chip.value
-                ? "bg-primary text-surface"
-                : "border border-hairline text-secondary hover:border-accent"
+                ? "bg-primary font-medium text-surface"
+                : "border border-hairline text-secondary hover:border-accent hover:text-primary"
             }`}
           >
             {chip.label}
@@ -60,10 +64,10 @@ export function ModelFilters({
             key={cap}
             type="button"
             onClick={() => toggleCapability(cap)}
-            className={`rounded px-2 py-1 font-mono text-[11px] ${
+            className={`rounded px-2 py-1 font-sans text-xs ${
               value.capability === cap
-                ? "bg-accent text-surface"
-                : "border border-hairline text-secondary hover:border-accent"
+                ? "bg-accent font-medium text-surface"
+                : "border border-hairline text-secondary hover:border-accent hover:text-primary"
             }`}
           >
             {cap}

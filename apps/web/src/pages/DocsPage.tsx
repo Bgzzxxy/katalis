@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Copy } from "lucide-react";
 import { useToast } from "../hooks/useToast";
 import { copyText } from "../lib/format";
 import { Panel } from "../components/ui/Panel";
@@ -56,12 +57,13 @@ export function CodeSnippet({ title, code }: { title: string; code: string }) {
         <button
           type="button"
           onClick={() => void copyText(code).then((ok) => push(ok ? "Snippet disalin" : "Gagal menyalin", ok ? "neutral" : "error"))}
-          className="rounded border border-hairline px-2 py-0.5 font-mono text-[10px] text-secondary hover:border-accent"
+          className="inline-flex items-center gap-1.5 rounded border border-hairline px-2 py-0.5 font-sans text-xs text-secondary hover:border-accent"
         >
+          <Copy className="h-3 w-3" aria-hidden="true" />
           Salin
         </button>
       </div>
-      <pre className="overflow-x-auto p-3 font-mono text-[12px] leading-relaxed" style={{ background: "var(--text-primary)", color: "var(--bg-surface)" }}>
+      <pre className="overflow-x-auto p-3 font-mono text-[12px] leading-5" style={{ background: "var(--text-primary)", color: "var(--bg-surface)" }}>
         <CodeBlock code={code} />
       </pre>
     </div>
@@ -94,10 +96,12 @@ export function DocsPage() {
     },
   ];
 
+  const activeSection = sections.find((s) => s.id === active)!;
+
   return (
-    <div className="space-y-4">
-      <h1 className="text-base font-semibold text-primary" style={{ letterSpacing: "-0.01em" }}>
-        Docs & Playground
+    <div className="space-y-6">
+      <h1 className="font-serif text-[22px] leading-7 font-medium tracking-[-0.015em] text-primary">
+        Docs &amp; Playground
       </h1>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-[220px_1fr]">
@@ -108,7 +112,7 @@ export function DocsPage() {
               type="button"
               onClick={() => setActive(s.id)}
               className={`rounded px-3 py-2 text-left font-sans text-[13px] ${
-                active === s.id ? "bg-primary text-surface" : "text-secondary hover:bg-canvas"
+                active === s.id ? "bg-primary font-medium text-surface" : "text-secondary hover:bg-canvas hover:text-primary"
               }`}
             >
               {s.label}
@@ -117,8 +121,13 @@ export function DocsPage() {
         </nav>
 
         <div className="space-y-4">
-          <Panel title={sections.find((s) => s.id === active)!.label}>
-            <p className="text-[13px] text-secondary">{sections.find((s) => s.id === active)!.body}</p>
+          <Panel title={activeSection.label}>
+            <h2 className="font-serif text-lg font-medium tracking-tight text-primary">
+              {activeSection.label}
+            </h2>
+            <p className="mt-1 max-w-[65ch] text-sm leading-[22px] text-pretty text-primary">
+              {activeSection.body}
+            </p>
           </Panel>
 
           {active === "playground" ? (
