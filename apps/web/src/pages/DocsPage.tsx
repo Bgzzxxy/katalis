@@ -1,0 +1,142 @@
+import { useState } from "react";
+import { useToast } from "../hooks/useToast";
+import { copyText } from "../lib/format";
+import { Panel } from "../components/ui/Panel";
+import { PlaygroundPanel } from "../components/docs/PlaygroundPanel";
+import { CodeBlock } from "../components/docs/CodeBlock";
+
+const PYTHON = `from openai import OpenAI
+
+client = OpenAI(
+    base_url="https://katalis.sh/v1",
+    api_key="sk-ktl-YOUR_KEY",
+)
+
+chat = client.chat.completions.create(
+    model="deepseek-v4.1-flash",
+    messages=[{"role": "user", "content": "Halo!"}],
+)
+print(chat.choices[0].message.content)`;
+
+const JAVASCRIPT = `import OpenAI from "openai";
+
+const client = new OpenAI({
+  baseURL: "https://katalis.sh/v1",
+  apiKey: "sk-ktl-YOUR_KEY",
+});
+
+const chat = await client.chat.completions.create({
+  model: "deepseek-v4.1-flash",
+  messages: [{ role: "user", content: "Halo!" }],
+});
+console.log(chat.choices[0].message.content);`;
+
+const CURL = `curl https://katalis.sh/v1/chat/completions \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer sk-ktl-YOUR_KEY" \\
+  -d '{
+    "model": "deepseek-v4.1-flash",
+    "messages": [{"role": "user", "content": "Halo!"}]
+  }'`;
+
+const CURSOR = `# Cursor Settings → Models → OpenAI API Key
+# Base URL:
+https://katalis.sh/v1
+# API Key:
+sk-ktl-YOUR_KEY
+# Model:
+deepseek-v4.1-flash`;
+
+export function CodeSnippet({ title, code }: { title: string; code: string }) {
+  const { push } = useToast();
+  return (
+    <div className="rounded-md border border-hairline bg-surface">
+      <div className="flex items-center justify-between border-b border-hairline px-3 py-2">
+        <span className="font-mono text-[11px] uppercase tracking-[0.05em] text-secondary">{title}</span>
+        <button
+          type="button"
+          onClick={() => void copyText(code).then((ok) => push(ok ? "Snippet disalin" : "Gagal menyalin", ok ? "neutral" : "error"))}
+          className="rounded border border-hairline px-2 py-0.5 font-mono text-[10px] text-secondary hover:border-accent"
+        >
+          Salin
+        </button>
+      </div>
+      <pre className="overflow-x-auto p-3 font-mono text-[12px] leading-relaxed" style={{ background: "var(--text-primary)", color: "var(--bg-surface)" }}>
+        <CodeBlock code={code} />
+      </pre>
+    </div>
+  );
+}
+
+export function DocsPage() {
+  const [active, setActive] = useState("mulai");
+
+  const sections: { id: string; label: string; body: string }[] = [
+    {
+      id: "mulai",
+      label: "Mulai Cepat",
+      body: "Gunakan Base URL https://katalis.sh/v1 dengan API key member Anda. SDK OpenAI (Python/JS) langsung kompatibel.",
+    },
+    {
+      id: "playground",
+      label: "Live API Playground",
+      body: "Simulasikan permintaan di panel bawah dengan model dan API key pilihan Anda.",
+    },
+    {
+      id: "cursor",
+      label: "Konfigurasi Cursor/Cline",
+      body: "Setel base URL dan API key pada pengaturan model editor Anda. Gunakan ID model dari katalog.",
+    },
+    {
+      id: "kendala",
+      label: "Kode Kendala",
+      body: "Semua error mengikuti format OpenAI: { error: { message, type, param, code } }.",
+    },
+  ];
+
+  return (
+    <div className="space-y-4">
+      <h1 className="text-base font-semibold text-primary" style={{ letterSpacing: "-0.01em" }}>
+        Docs & Playground
+      </h1>
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-[220px_1fr]">
+        <nav className="flex flex-col gap-1">
+          {sections.map((s) => (
+            <button
+              key={s.id}
+              type="button"
+              onClick={() => setActive(s.id)}
+              className={`rounded px-3 py-2 text-left font-sans text-[13px] ${
+                active === s.id ? "bg-primary text-surface" : "text-secondary hover:bg-canvas"
+              }`}
+            >
+              {s.label}
+            </button>
+          ))}
+        </nav>
+
+        <div className="space-y-4">
+          <Panel title={sections.find((s) => s.id === active)!.label}>
+            <p className="text-[13px] text-secondary">{sections.find((s) => s.id === active)!.body}</p>
+          </Panel>
+
+          {active === "playground" ? (
+            <Panel title="Live API Playground">
+              <PlaygroundPanel />
+            </Panel>
+          ) : null}
+
+          <Panel title="Integrasi">
+            <div className="space-y-3">
+              <CodeSnippet title="Python" code={PYTHON} />
+              <CodeSnippet title="JavaScript / TypeScript" code={JAVASCRIPT} />
+              <CodeSnippet title="cURL" code={CURL} />
+              <CodeSnippet title="Cursor / Cline" code={CURSOR} />
+            </div>
+          </Panel>
+        </div>
+      </div>
+    </div>
+  );
+}

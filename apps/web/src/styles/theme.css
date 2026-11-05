@@ -1,3 +1,24 @@
+@import "tailwindcss";
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
+@import "@fontsource/jetbrains-mono/600.css";
+
+@theme inline {
+  --color-canvas: var(--bg-canvas);
+  --color-surface: var(--bg-surface);
+  --color-primary: var(--text-primary);
+  --color-accent: var(--accent-main);
+  --color-secondary: var(--text-secondary);
+  --color-hairline: var(--border-hairline);
+  --color-success: var(--state-success);
+  --color-error: var(--state-error);
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
 :root {
   --bg-canvas: #F0EEE8;
   --bg-surface: #FAF9F5;
@@ -8,8 +29,12 @@
   --state-success: #54836A;
   --state-error: #C45E52;
 
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
+  --accent-subtle: rgba(183, 122, 69, 0.12);
+  --accent-border: rgba(183, 122, 69, 0.30);
+  --success-subtle: rgba(84, 131, 106, 0.12);
+  --success-border: rgba(84, 131, 106, 0.30);
+  --error-subtle: rgba(196, 94, 82, 0.12);
+  --error-border: rgba(196, 94, 82, 0.30);
 }
 
 html,
@@ -22,4 +47,15 @@ body,
 
 body {
   background: var(--bg-canvas);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Keyboard-first surfaces (Command palette) need a visible focus ring without
+   introducing a colour outside the 8-token palette. */
+:focus-visible {
+  outline: 2px solid var(--accent-main);
+  outline-offset: 1px;
 }

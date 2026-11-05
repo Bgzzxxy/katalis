@@ -13,6 +13,8 @@ export type PlanType = "PREPAID" | "UNLIMITED_10D" | "TRIAL_1D";
 export type InvoiceView = {
   id: string;
   plan_type: PlanType;
+  base_amount_idr: number;
+  bonus_amount_idr: number;
   total_pay_idr: number;
   qris_string: string;
   status: string;
@@ -147,11 +149,15 @@ export async function createInvoice(
           qrisString: paymentInvoices.qrisString,
           status: paymentInvoices.status,
           expiresAt: paymentInvoices.expiresAt,
+          baseAmountIdr: paymentInvoices.baseAmountIdr,
+          bonusAmountIdr: paymentInvoices.bonusAmountIdr,
           totalPayIdr: paymentInvoices.totalPayIdr,
         });
       return {
         id: row.id,
         plan_type: row.planType as PlanType,
+        base_amount_idr: toIdr(row.baseAmountIdr),
+        bonus_amount_idr: toIdr(row.bonusAmountIdr),
         total_pay_idr: toIdr(row.totalPayIdr),
         qris_string: row.qrisString,
         status: row.status,
