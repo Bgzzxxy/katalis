@@ -11,6 +11,7 @@ import {
   closeDb,
 } from "./helpers/db";
 import { clearApiKeyCache } from "./helpers/redis";
+import { findModel } from "../src/services/model-catalog";
 
 const { client: dbClient, db } = createDb(TEST_DB_URL, { max: 1 });
 const redis = createRedis(TEST_REDIS_URL);
@@ -83,8 +84,12 @@ describe("GET /api/models", () => {
     const res = await app.request("/api/models");
     const body = (await res.json()) as { data: ModelRow[] };
     const row = body.data.find((m) => m.id === "deepseek-v4-pro");
-    expect(row?.price_in_idr_per_1m).toBe(27);
-    expect(row?.price_out_idr_per_1m).toBe(110);
+    const spec = findModel("deepseek-v4-pro");
+    expect(spec).toBeDefined();
+    expect(row?.price_in_idr_per_1m).toBe(spec!.priceInMicroPer1M / 1_000_000);
+    expect(row?.price_out_idr_per_1m).toBe(spec!.priceOutMicroPer1M / 1_000_000);
+    // Sanity: the served number is a 1M-token price, not the micro value itself.
+    expect(row!.price_in_idr_per_1m).toBeLessThan(spec!.priceInMicroPer1M);
   });
 
   test("agrees with /v1/models on ids and capabilities are documented-only", async () => {

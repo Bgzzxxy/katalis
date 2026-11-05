@@ -117,3 +117,22 @@ export function fetchInvoiceStatus(invoiceId: string): Promise<InvoiceStatusView
 export function fetchDailyUsage(): Promise<DailyUsage> {
   return apiFetch<DailyUsage>("/api/billing/usage");
 }
+
+/** GET /api/models row (snake_case wire shape, apps/api/src/routes/models.ts). */
+export type ApiModelRow = {
+  id: string;
+  name: string;
+  provider: string;
+  pool: string;
+  owned_by: string;
+  price_in_idr_per_1m: number;
+  price_out_idr_per_1m: number;
+  capabilities: string[];
+};
+
+export type ModelListResponse = { object: "list"; data: ApiModelRow[] };
+
+/** Public live catalog — the only source for the Models dashboard. */
+export function fetchModels(): Promise<ModelListResponse> {
+  return apiFetch<ModelListResponse>("/api/models");
+}

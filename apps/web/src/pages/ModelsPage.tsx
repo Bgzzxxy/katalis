@@ -4,7 +4,8 @@ import { Panel } from "../components/ui/Panel";
 import { DataState } from "../components/ui/DataState";
 import { ModelFilters, type ModelFilterValue } from "../components/models/ModelFilters";
 import { ModelsTable } from "../components/models/ModelsTable";
-import { MODEL_CATALOG, POOL_LABELS } from "../lib/model-catalog";
+import { useModels } from "../hooks/useModels";
+import { POOL_LABELS } from "../lib/model-catalog";
 import {
   estimateCostIdr,
   UNLIMITED_LORA_DISCOUNT,
@@ -31,11 +32,11 @@ function ModelsPageBody({ query }: { query: string }) {
     query,
   });
   const [unlimitedDiscount, setUnlimitedDiscount] = useState(false);
-  const [selectedModelId, setSelectedModelId] = useState<string | null>(
-    MODEL_CATALOG[0]?.id ?? null,
-  );
+  const [manualModelId, setManualModelId] = useState<string | null>(null);
   const [inputTokens, setInputTokens] = useState(500_000);
   const [outputTokens, setOutputTokens] = useState(250_000);
+
+  const { status, models, error, refresh } = useModels();
 
   useEffect(() => {
     setFilters((prev) => (prev.query === query ? prev : { ...prev, query }));
@@ -43,16 +44,18 @@ function ModelsPageBody({ query }: { query: string }) {
 
   const filtered = useMemo(() => {
     const q = filters.query.trim().toLowerCase();
-    return MODEL_CATALOG.filter((model) => {
+    return models.filter((model) => {
       if (filters.pool !== "ALL" && model.pool !== filters.pool) return false;
       if (filters.capability && !model.capabilities.includes(filters.capability)) return false;
       if (q && !model.id.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [filters]);
+  }, [filters, models]);
 
+  const selectedModelId =
+    models.some((model) => model.id === manualModelId) ? manualModelId : (models[0]?.id ?? null);
   const selectedModel =
-    MODEL_CATALOG.find((model) => model.id === selectedModelId) ?? MODEL_CATALOG[0] ?? null;
+    models.find((model) => model.id === selectedModelId) ?? models[0] ?? null;
 
   const estimate = useMemo(
     () =>
@@ -76,8 +79,23 @@ function ModelsPageBody({ query }: { query: string }) {
         <ModelFilters value={filters} onChange={setFilters} />
       </Panel>
 
-      <Panel title={`Model (${filtered.length})`}>
-        {filtered.length === 0 ? (
+      <Panel title={`Model (${status === "populated" ? filtered.length : 0})`}>
+        {status === "loading" ? (
+          <DataState state="loading" skeletonRows={4} />
+        ) : status === "error" ? (
+          <DataState
+            state="error"
+            errorCode={error?.errorCodeLabel ?? "CATALOG_ERROR"}
+            errorMessage={error?.message ?? "Gagal memuat katalog model"}
+            onRetry={() => void refresh()}
+          />
+        ) : status === "empty" ? (
+          <DataState
+            state="empty"
+            emptyLabel="Belum ada model terdaftar"
+            emptyAction={{ label: "Muat Ulang", onClick: () => void refresh() }}
+          />
+        ) : filtered.length === 0 ? (
           <DataState
             state="empty"
             emptyLabel="Tidak ada model cocok dengan filter"
@@ -107,10 +125,10 @@ function ModelsPageBody({ query }: { query: string }) {
             aria-label="Model yang dihitung"
             className="rounded border border-hairline bg-surface px-2 py-1.5 font-mono text-[13px] text-primary outline-none focus:border-accent"
             value={selectedModelId ?? ""}
-            onChange={(e) => setSelectedModelId(e.target.value || null)}
-            disabled={MODEL_CATALOG.length === 0}
+            onChange={(e) => setManualModelId(e.target.value || null)}
+            disabled={models.length === 0}
           >
-            {MODEL_CATALOG.map((m) => (
+            {models.map((m) => (
               <option key={m.id} value={m.id}>
                 {m.name} · {POOL_LABELS[m.pool]}
               </option>

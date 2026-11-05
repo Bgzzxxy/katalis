@@ -34,3 +34,6 @@ test-results/
 .idea/
 .vscode/
 *.swp
+# Design reference material (large binaries, not product source)
+stitch_katalis_design_system/
+stitch_katalis_design_system.zip

@@ -1,7 +1,11 @@
-// Web mirror of the API model catalog (apps/api/src/services/model-catalog.ts).
-// Prices are IDR per 1M tokens (micro-per-1M / 1e6). Capabilities and vendor
-// labels are presentation-only and pinned to the backend by
+// Static marketing mirror of the API model catalog. Prices are IDR per 1M
+// tokens (micro-per-1M / 1e6). Capabilities and vendor labels are pinned to the
+// backend (apps/api/src/services/model-catalog.ts) by
 // tests/qa/pricing-parity.qa.test.ts, so edit BOTH files when a model changes.
+//
+// MODEL_CATALOG is exported ONLY for LandingPage (the public marketing page must
+// still render offline, without an API session). The member-facing Models
+// dashboard reads the live catalog from GET /api/models via hooks/useModels.ts.
 //
 // shortcut: the catalog is duplicated, update both when prices change.
 
@@ -24,8 +28,8 @@ export const MODEL_CATALOG: readonly ModelSpec[] = [
     name: "DeepSeek V4 Pro",
     provider: "DeepSeek",
     pool: "STABLE",
-    priceInIdrPer1M: 27,
-    priceOutIdrPer1M: 110,
+    priceInIdrPer1M: 17.951,
+    priceOutIdrPer1M: 53.853,
     capabilities: ["Reasoning", "Tools"],
   },
   {
@@ -33,8 +37,8 @@ export const MODEL_CATALOG: readonly ModelSpec[] = [
     name: "DeepSeek V4.1 Flash",
     provider: "DeepSeek",
     pool: "STABLE",
-    priceInIdrPer1M: 9,
-    priceOutIdrPer1M: 22,
+    priceInIdrPer1M: 4.08,
+    priceOutIdrPer1M: 16.319,
     capabilities: ["Reasoning", "Tools"],
   },
   {
@@ -51,8 +55,8 @@ export const MODEL_CATALOG: readonly ModelSpec[] = [
     name: "GLM 5.3 Flash",
     provider: "Zhipu",
     pool: "FLEX",
-    priceInIdrPer1M: 2,
-    priceOutIdrPer1M: 9,
+    priceInIdrPer1M: 2.17,
+    priceOutIdrPer1M: 7.594,
     capabilities: [],
   },
   {
@@ -60,8 +64,8 @@ export const MODEL_CATALOG: readonly ModelSpec[] = [
     name: "GLM 4.6V",
     provider: "Zhipu",
     pool: "STABLE",
-    priceInIdrPer1M: 5,
-    priceOutIdrPer1M: 18,
+    priceInIdrPer1M: 2.712,
+    priceOutIdrPer1M: 8.137,
     capabilities: ["Vision"],
   },
   {
@@ -69,8 +73,8 @@ export const MODEL_CATALOG: readonly ModelSpec[] = [
     name: "Kimi K2",
     provider: "Moonshot",
     pool: "STABLE",
-    priceInIdrPer1M: 12,
-    priceOutIdrPer1M: 48,
+    priceInIdrPer1M: 10.517,
+    priceOutIdrPer1M: 41.523,
     capabilities: ["Tools"],
   },
   {
@@ -98,3 +102,16 @@ export const POOL_LABELS: Record<PoolTier, string> = {
   STABLE: "Stable",
   FLEX: "Flex",
 };
+
+const POOL_TIER_VALUES: readonly string[] = ["LORA", "STABLE", "FLEX"];
+const CAPABILITY_VALUES: readonly string[] = ["Reasoning", "Vision", "Tools"];
+
+/** Narrows any untrusted string (e.g. an API row) to a known pool tier. */
+export function asPoolTier(value: string): PoolTier | null {
+  return POOL_TIER_VALUES.includes(value) ? (value as PoolTier) : null;
+}
+
+/** Narrows any untrusted string (e.g. an API row) to a known capability. */
+export function asCapability(value: string): Capability | null {
+  return CAPABILITY_VALUES.includes(value) ? (value as Capability) : null;
+}

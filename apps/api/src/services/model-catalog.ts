@@ -6,8 +6,11 @@
 // reads the live catalog from GET /api/models, so this file is the one place to
 // edit when a model or price changes.
 //
-// shortcut: prices are business assumptions (Prd §3) pending product sign-off,
-// and route order doubles as the failover order (no per-pool upstream split yet).
+// Prices are upstream list prices converted at 1 USD = Rp 18.132 and
+// 1 CNY = Rp 2.712 (see knowledge/upstream-pricing.md for the per-model source
+// URL and fetched date); models with no public list price keep a business
+// assumption and are marked there. Route order doubles as the failover order
+// (no per-pool upstream split yet).
 
 export type PoolTier = "LORA" | "STABLE" | "FLEX";
 export type ProviderId = "SILICONFLOW" | "DEEPSEEK" | "ZHIPU" | "VOLCENGINE";
@@ -42,8 +45,8 @@ export const MODEL_CATALOG: readonly ModelSpec[] = [
     provider: "DeepSeek",
     defaultPool: "STABLE",
     ownedBy: "katalis",
-    priceInMicroPer1M: 27_000_000,
-    priceOutMicroPer1M: 110_000_000,
+    priceInMicroPer1M: 17_951_000,
+    priceOutMicroPer1M: 53_853_000,
     routes: [
       { provider: "DEEPSEEK", upstreamModel: "deepseek-v4-pro" },
       { provider: "SILICONFLOW", upstreamModel: "deepseek-ai/DeepSeek-V3" },
@@ -56,8 +59,8 @@ export const MODEL_CATALOG: readonly ModelSpec[] = [
     provider: "DeepSeek",
     defaultPool: "STABLE",
     ownedBy: "katalis",
-    priceInMicroPer1M: 9_000_000,
-    priceOutMicroPer1M: 22_000_000,
+    priceInMicroPer1M: 4_080_000,
+    priceOutMicroPer1M: 16_319_000,
     routes: [
       { provider: "DEEPSEEK", upstreamModel: "deepseek-v4.1-flash" },
       { provider: "SILICONFLOW", upstreamModel: "deepseek-ai/DeepSeek-V3" },
@@ -83,8 +86,8 @@ export const MODEL_CATALOG: readonly ModelSpec[] = [
     provider: "Zhipu",
     defaultPool: "FLEX",
     ownedBy: "katalis",
-    priceInMicroPer1M: 2_000_000,
-    priceOutMicroPer1M: 9_000_000,
+    priceInMicroPer1M: 2_170_000,
+    priceOutMicroPer1M: 7_594_000,
     routes: [
       { provider: "ZHIPU", upstreamModel: "glm-5.3-flash" },
       { provider: "SILICONFLOW", upstreamModel: "THUDM/GLM-5.3-Flash" },
@@ -96,8 +99,8 @@ export const MODEL_CATALOG: readonly ModelSpec[] = [
     provider: "Zhipu",
     defaultPool: "STABLE",
     ownedBy: "katalis",
-    priceInMicroPer1M: 5_000_000,
-    priceOutMicroPer1M: 18_000_000,
+    priceInMicroPer1M: 2_712_000,
+    priceOutMicroPer1M: 8_137_000,
     routes: [
       { provider: "ZHIPU", upstreamModel: "glm-4.6v" },
       { provider: "SILICONFLOW", upstreamModel: "THUDM/GLM-4.6V" },
@@ -109,8 +112,8 @@ export const MODEL_CATALOG: readonly ModelSpec[] = [
     provider: "Moonshot",
     defaultPool: "STABLE",
     ownedBy: "katalis",
-    priceInMicroPer1M: 12_000_000,
-    priceOutMicroPer1M: 48_000_000,
+    priceInMicroPer1M: 10_517_000,
+    priceOutMicroPer1M: 41_523_000,
     routes: [
       { provider: "SILICONFLOW", upstreamModel: "moonshotai/Kimi-K2-Instruct" },
       { provider: "VOLCENGINE", upstreamModel: "kimi-k2-250905" },

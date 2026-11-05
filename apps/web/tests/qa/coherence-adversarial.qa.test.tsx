@@ -13,8 +13,8 @@ import { ToastProvider } from "../../src/hooks/useToast";
 import { AuthProvider } from "../../src/hooks/useAuth";
 import { CommandPalette } from "../../src/components/command/CommandPalette";
 import { QrisModal } from "../../src/components/billing/QrisModal";
+import { resetModelsCache } from "../../src/hooks/useModels";
 import type { InvoiceStatusView, InvoiceView, Telemetry } from "../../src/lib/types";
-
 const originalFetch = globalThis.fetch;
 afterEach(() => {
   globalThis.fetch = originalFetch;
@@ -68,6 +68,41 @@ describe("QA FINDING: navbar connection dot contradicts Monitor status", () => {
 
 describe("QA FINDING: command palette model search drops its query param", () => {
   test("navigating to /models?q=<id> must apply that query filter", async () => {
+    resetModelsCache();
+    globalThis.fetch = (async (url: string) => {
+      if (String(url).includes("/api/models")) {
+        return new Response(
+          JSON.stringify({
+            object: "list",
+            data: [
+              {
+                id: "glm-4.6v",
+                name: "GLM 4.6V",
+                provider: "Zhipu",
+                pool: "STABLE",
+                owned_by: "katalis",
+                price_in_idr_per_1m: 4,
+                price_out_idr_per_1m: 16,
+                capabilities: ["Vision"],
+              },
+              {
+                id: "deepseek-v4-pro",
+                name: "DeepSeek V4 Pro",
+                provider: "DeepSeek",
+                pool: "STABLE",
+                owned_by: "katalis",
+                price_in_idr_per_1m: 27,
+                price_out_idr_per_1m: 110,
+                capabilities: ["Reasoning"],
+              },
+            ],
+          }),
+          { status: 200, headers: { "Content-Type": "application/json" } },
+        );
+      }
+      return new Response("", { status: 404 });
+    }) as unknown as typeof fetch;
+
     function Probe() {
       const loc = useLocation();
       return <div data-testid="loc">{loc.pathname + loc.search}</div>;
@@ -93,8 +128,10 @@ describe("QA FINDING: command palette model search drops its query param", () =>
 
     expect(screen.getByTestId("loc").textContent).toBe("/models?q=glm-4.6v");
     // The page receives the query but must filter the table down to it.
-    const ids = Array.from(container.querySelectorAll("tbody button")).map((b) => b.textContent);
-    expect(ids).toEqual(["glm-4.6v"]);
+    await waitFor(() => {
+      const ids = Array.from(container.querySelectorAll("tbody button")).map((b) => b.textContent);
+      expect(ids).toEqual(["glm-4.6v"]);
+    });
   });
 
   test("palette model action navigates to /models?q=<id> (documents the URL it emits)", async () => {

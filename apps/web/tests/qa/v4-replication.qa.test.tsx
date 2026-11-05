@@ -314,8 +314,10 @@ describe("QA v4: playground 3-pane interaction", () => {
     fireEvent.change(select, { target: { value: flash.id } });
 
     // Info rail (left parameter pane): "Rp X / 1M in" & "Rp Y / 1M out".
-    expect(screen.getByText(/Rp 9 \/ 1M in/)).toBeTruthy();
-    expect(screen.getByText(/Rp 22 \/ 1M out/)).toBeTruthy();
+    const inLabel = `Rp ${flash.priceInIdrPer1M.toLocaleString("id-ID")} / 1M in`;
+    const outLabel = `Rp ${flash.priceOutIdrPer1M.toLocaleString("id-ID")} / 1M out`;
+    expect(screen.getByText(inLabel)).toBeTruthy();
+    expect(screen.getByText(outLabel)).toBeTruthy();
   });
 
   test("submitting a prompt shows HTTP status, latency, and token receipt", async () => {

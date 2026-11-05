@@ -5,7 +5,11 @@ import type { Db } from "../db";
 import type { AppEnv } from "../env";
 import type { QrisProvider } from "../services/qris-provider";
 import { createInvoice, getInvoiceStatus } from "../services/qris.service";
-import { getDailyUsage } from "../services/usage.service";
+import {
+  getDailyUsage,
+  getUsageHistory,
+  getUsageSummary,
+} from "../services/usage.service";
 import { sessionAuth, type SessionVariables } from "../middleware/session-auth";
 import { AppError } from "../middleware/error-handler";
 
@@ -68,6 +72,36 @@ export function billingRoutes(
     return c.json(status, 200);
   });
 
+
+  app.get("/usage/history", sessionAuth(env.JWT_SECRET), async (c) => {
+    const limitQuery = c.req.query("limit");
+    const offsetQuery = c.req.query("offset");
+    const keyId = c.req.query("key_id") || undefined;
+
+    const limit = limitQuery !== undefined ? Number(limitQuery) : 20;
+    const offset = offsetQuery !== undefined ? Number(offsetQuery) : 0;
+
+    const history = await getUsageHistory(db, c.get("user").id, {
+      limit,
+      offset,
+      keyId,
+    });
+    return c.json(history, 200);
+  });
+
+  app.get("/usage/summary", sessionAuth(env.JWT_SECRET), async (c) => {
+    const daysQuery = c.req.query("days");
+    const days = daysQuery !== undefined ? Number(daysQuery) : 7;
+    if (days !== 7 && days !== 30) {
+      throw new AppError(400, "VALIDATION_ERROR", "Parameter days harus bernilai 7 atau 30", {
+        type: "validation_error",
+        param: "days",
+      });
+    }
+
+    const summary = await getUsageSummary(db, c.get("user").id, days);
+    return c.json(summary, 200);
+  });
 
   app.get("/usage", sessionAuth(env.JWT_SECRET), async (c) => {
     const usage = await getDailyUsage(db, c.get("user").id);

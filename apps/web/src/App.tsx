@@ -12,6 +12,7 @@ import { DocsPage } from "./pages/DocsPage";
 import { LoginPage } from "./pages/LoginPage";
 import { RegisterPage } from "./pages/RegisterPage";
 import { LandingPage } from "./pages/LandingPage";
+import { UsagePage } from "./pages/UsagePage";
 
 export default function App() {
   return (
@@ -41,6 +42,14 @@ export default function App() {
                 element={
                   <RequireAuth>
                     <BillingPage />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/usage"
+                element={
+                  <RequireAuth>
+                    <UsagePage />
                   </RequireAuth>
                 }
               />
