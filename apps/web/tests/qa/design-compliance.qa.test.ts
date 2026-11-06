@@ -89,6 +89,7 @@ describe("QA design compliance: palette tokens", () => {
   test("floating shadows are limited to palette, modals and toast", () => {
     const shadowOwners = [
       "CommandPalette.tsx",
+      "SidebarDrawer.tsx",
       "CreateKeyModal.tsx",
       "SpendLimitModal.tsx",
       "QrisModal.tsx",

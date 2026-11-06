@@ -94,29 +94,37 @@ function renderAppAt(path: string) {
   return render(<App />);
 }
 
-async function assertNoSidebar() {
-  await waitFor(() => expect(screen.queryByText("Saldo Prabayar")).toBeNull());
-  // eslint-disable-next-line testing-library/no-node-access
+async function assertNoNavTrigger() {
+  // Public routes have no workspace chrome: no hamburger, no drawer, no wallet.
+  await waitFor(() => expect(screen.queryByText("Terhubung ·")).toBeNull());
+  expect(screen.queryByLabelText("Buka menu navigasi")).toBeNull();
   expect(document.querySelector("aside")).toBeNull();
 }
 
-async function assertSidebar() {
-  await waitFor(() => expect(screen.getByText("Saldo Prabayar")).toBeTruthy());
-  // eslint-disable-next-line testing-library/no-node-access
-  expect(document.querySelector("aside")).toBeTruthy();
+async function assertNavTrigger() {
+  const trigger = await screen.findByLabelText("Buka menu navigasi");
+  expect(trigger).toBeTruthy();
+  // Drawer starts closed: the wallet summary is only revealed on request.
+  expect(document.querySelector("aside")).toBeNull();
+  fireEvent.click(trigger);
+  await waitFor(() => expect(document.querySelector("aside")).toBeTruthy());
+  // "Saldo Prabayar" also labels a billing plan, so assert it scoped to the
+  // drawer element rather than document-wide.
+  expect(document.querySelector("aside")?.textContent).toContain("Saldo Prabayar");
+  expect(screen.getByLabelText("Tutup menu")).toBeTruthy();
 }
 
 describe("QA v4: public vs auth shell layout", () => {
-  test("public routes render no 240px sidebar", async () => {
+  test("public routes render no workspace chrome", async () => {
     workspaceFetch();
     renderAppAt("/");
-    await assertNoSidebar();
+    await assertNoNavTrigger();
   });
 
-  test("workspace routes render the sidebar + utility header", async () => {
+  test("workspace routes render the hamburger + utility header", async () => {
     workspaceFetch();
     renderAppAt("/monitor");
-    await assertSidebar();
+    await assertNavTrigger();
     // Dashboard header utility (latency pill + theme toggle) must participate.
     await waitFor(() => expect(screen.getByText(/Terhubung ·/)).toBeTruthy());
     expect(screen.getByLabelText(/Aktifkan tema/)).toBeTruthy();
@@ -127,12 +135,12 @@ describe("QA v4: public vs auth shell layout", () => {
 
     for (const p of PUBLIC_ROUTES) {
       const { unmount } = renderAppAt(p);
-      await assertNoSidebar();
+      await assertNoNavTrigger();
       unmount();
     }
     for (const p of WORKSPACE_ROUTES) {
       const { unmount } = renderAppAt(p);
-      await assertSidebar();
+      await assertNavTrigger();
       unmount();
     }
   });

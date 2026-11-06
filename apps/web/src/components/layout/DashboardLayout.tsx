@@ -1,7 +1,7 @@
-import type { ReactNode } from "react";
-import { NavLink, Outlet } from "react-router-dom";
-import { Copy, Moon, Sun } from "lucide-react";
-import { NAV, Sidebar } from "./Sidebar";
+import { useState, type ReactNode } from "react";
+import { Outlet } from "react-router-dom";
+import { Copy, Menu, Moon, Sun } from "lucide-react";
+import { SidebarDrawer } from "./SidebarDrawer";
 import { useAuth } from "../../hooks/useAuth";
 import { useTheme } from "../../hooks/useTheme";
 import { useToast } from "../../hooks/useToast";
@@ -12,8 +12,9 @@ import { CommandPaletteTrigger } from "../command/CommandPalette";
 
 const BASE_URL = "https://katalis.sh/v1";
 
-/** Authenticated workspace shell (v4.0 §5.2): left sidebar + slim utility header. */
+/** Authenticated workspace shell: slim utility header + hamburger drawer nav. */
 export function DashboardLayout({ children }: { children?: ReactNode }) {
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const { data, error } = useTelemetry();
   const latencyMs = error ? -1 : data?.connection.latency_ms;
   const connectionOk = !error && (data?.connection.ok ?? false);
@@ -30,10 +31,19 @@ export function DashboardLayout({ children }: { children?: ReactNode }) {
 
   return (
     <div className="flex min-h-screen bg-canvas">
-      <Sidebar />
+      <SidebarDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b border-hairline bg-surface/95 px-4 backdrop-blur-sm md:px-6">
+        <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-hairline bg-surface/95 px-4 backdrop-blur-sm md:px-6">
+          <button
+            type="button"
+            onClick={() => setDrawerOpen(true)}
+            aria-label="Buka menu navigasi"
+            className="inline-flex shrink-0 items-center justify-center rounded border border-hairline p-2 text-secondary hover:border-accent hover:text-primary"
+          >
+            <Menu className="h-4 w-4" />
+          </button>
+
           {latencyMs !== undefined ? (
             <div className="flex shrink-0 items-center gap-1.5">
               <span
@@ -80,25 +90,6 @@ export function DashboardLayout({ children }: { children?: ReactNode }) {
             )}
           </div>
         </header>
-
-        <nav className="flex items-center gap-1 overflow-x-auto border-b border-hairline px-4 py-1 md:hidden">
-          {NAV.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.to === "/monitor"}
-              className={({ isActive }) =>
-                `whitespace-nowrap rounded px-3 py-1.5 text-xs ${
-                  isActive
-                    ? "bg-primary font-medium text-surface"
-                    : "text-secondary hover:bg-canvas hover:text-primary"
-                }`
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
 
         <main className="mx-auto w-full max-w-7xl px-4 py-6 md:px-6">{children ?? <Outlet />}</main>
       </div>
