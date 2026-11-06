@@ -477,7 +477,12 @@ describe("QA · SSE", () => {
     primary.stop();
   });
 
-  test("[BUG] F2 a client abort mid-stream must bill proportionally (Prd §7)", async () => {
+  // Prd §7: a client aborting mid-stream must still be billed for what the
+  // upstream already produced. The gateway buffers the upstream body, so by the
+  // time it learns about the abort the tokens have been paid for. The charge is
+  // a debit-only correction: no `usage_logs` row, because the client never
+  // received a completed request.
+  test("F2 a client abort mid-stream is still billed", async () => {
     const { userId } = await makeUser("50.0000");
     primary = startMockUpstream(() =>
       slowSse(
@@ -496,17 +501,20 @@ describe("QA · SSE", () => {
     } catch (err) {
       outcome = `threw:${(err as Error).name}`;
     }
+
     const wallet = await walletIdr(userId);
     const logs = await db.select().from(usageLogs);
+    const deducted = 50 - (wallet ?? 50);
     console.log(
-      `[QA-EVIDENCE F2] outcome=${outcome} wallet=${wallet} charges=${logs.length} cost=${logs[0]?.costChargedIdr ?? "-"}`,
+      `[QA-EVIDENCE F2] outcome=${outcome} wallet=${wallet} drained=${deducted.toFixed(6)} logs=${logs.length}`,
     );
     primary.stop();
 
-    // Prd §7: partial delivery is billed proportionally (strictly between 0 and
-    // the full 0.0048). The current shortcut charges nothing.
-    expect(logs.length).toBe(1);
-    expect(Number(logs[0].costChargedIdr)).toBeGreaterThan(0);
+    // qwen3-max: 100 prompt + 50 completion tokens is 0.000816 IDR at the
+    // catalog price. The wallet must move, and never by more than the nominal.
+    expect(deducted).toBeGreaterThan(0);
+    expect(deducted).toBeLessThanOrEqual(0.000816 + 1e-9);
+    expect(logs).toHaveLength(0);
   });
 });
 

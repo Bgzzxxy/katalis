@@ -49,7 +49,7 @@ export const MODEL_CATALOG: readonly ModelSpec[] = [
     priceOutMicroPer1M: 53_853_000,
     routes: [
       { provider: "DEEPSEEK", upstreamModel: "deepseek-v4-pro" },
-      { provider: "SILICONFLOW", upstreamModel: "deepseek-ai/DeepSeek-V3" },
+      { provider: "SILICONFLOW", upstreamModel: "deepseek-ai/DeepSeek-V3.2" },
       { provider: "VOLCENGINE", upstreamModel: "deepseek-v3-250324" },
     ],
   },
@@ -63,7 +63,7 @@ export const MODEL_CATALOG: readonly ModelSpec[] = [
     priceOutMicroPer1M: 16_319_000,
     routes: [
       { provider: "DEEPSEEK", upstreamModel: "deepseek-v4.1-flash" },
-      { provider: "SILICONFLOW", upstreamModel: "deepseek-ai/DeepSeek-V3" },
+      { provider: "SILICONFLOW", upstreamModel: "deepseek-ai/DeepSeek-V3.2" },
       { provider: "VOLCENGINE", upstreamModel: "deepseek-v3-250324" },
     ],
   },
@@ -90,7 +90,9 @@ export const MODEL_CATALOG: readonly ModelSpec[] = [
     priceOutMicroPer1M: 7_594_000,
     routes: [
       { provider: "ZHIPU", upstreamModel: "glm-5.3-flash" },
-      { provider: "SILICONFLOW", upstreamModel: "THUDM/GLM-5.3-Flash" },
+      // SiliconFlow lists neither THUDM/GLM-5.3-Flash nor THUDM/GLM-4.6V in
+      // /v1/models or on /models, so this failover hop is dropped instead of
+      // left pointing at a dead model id.
     ],
   },
   {
@@ -101,10 +103,7 @@ export const MODEL_CATALOG: readonly ModelSpec[] = [
     ownedBy: "katalis",
     priceInMicroPer1M: 2_712_000,
     priceOutMicroPer1M: 8_137_000,
-    routes: [
-      { provider: "ZHIPU", upstreamModel: "glm-4.6v" },
-      { provider: "SILICONFLOW", upstreamModel: "THUDM/GLM-4.6V" },
-    ],
+    routes: [{ provider: "ZHIPU", upstreamModel: "glm-4.6v" }],
   },
   {
     id: "kimi-k2",
@@ -115,7 +114,7 @@ export const MODEL_CATALOG: readonly ModelSpec[] = [
     priceInMicroPer1M: 10_517_000,
     priceOutMicroPer1M: 41_523_000,
     routes: [
-      { provider: "SILICONFLOW", upstreamModel: "moonshotai/Kimi-K2-Instruct" },
+      { provider: "SILICONFLOW", upstreamModel: "moonshotai/Kimi-K2.6" },
       { provider: "VOLCENGINE", upstreamModel: "kimi-k2-250905" },
     ],
   },

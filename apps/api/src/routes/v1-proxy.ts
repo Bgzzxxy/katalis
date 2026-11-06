@@ -243,8 +243,8 @@ function parseUsage(modelId: string, text: string): ParsedUsage {
   return { promptTokens: Math.max(1, Math.ceil(text.length / 4)), completionTokens: 0 };
 }
 
-async function settle(db: Db, redis: Redis, claim: SettleClaim, usage: ParsedUsage): Promise<void> {
-  const { costMicro } = meterTokens(
+function costMicroFor(claim: SettleClaim, usage: ParsedUsage): number {
+  return meterTokens(
     {
       promptTokens: usage.promptTokens,
       completionTokens: usage.completionTokens,
@@ -253,7 +253,11 @@ async function settle(db: Db, redis: Redis, claim: SettleClaim, usage: ParsedUsa
     claim.model.priceInMicroPer1M,
     claim.model.priceOutMicroPer1M,
     claim.unlimitedExpiresAt,
-  );
+  ).costMicro;
+}
+
+async function settle(db: Db, redis: Redis, claim: SettleClaim, usage: ParsedUsage): Promise<void> {
+  const costMicro = costMicroFor(claim, usage);
 
   // Charge is atomic: it checks balance + spend_limit and debits in one Lua
   // script, returning the ACTUAL debited micro amount (already clamped).
@@ -284,6 +288,28 @@ async function settle(db: Db, redis: Redis, claim: SettleClaim, usage: ParsedUsa
   });
 }
 
+/**
+ * Bill a stream the client abandoned. The upstream still produced tokens that
+ * we paid for, so the member pays for what the upstream reported (or, when no
+ * usage object arrived, for the bytes that were delivered). Nothing is persisted
+ * to `usage_logs`: the request never reached the client, so it is a debit-only
+ * correction, not a billed request.
+ */
+async function settlePartial(redis: Redis, claim: SettleClaim, delivered: string): Promise<void> {
+  const billed = parseUsage(claim.model.id, delivered).promptTokens;
+  const { decision } = await chargeRequest(
+    redis,
+    claim.userId,
+    claim.keyHash,
+    costMicroFor(claim, { promptTokens: billed, completionTokens: 0 }),
+  );
+  if (decision !== "ok") {
+    console.warn(
+      `[stream-abort] charge skipped decision=${decision} bytes=${delivered.length}`,
+    );
+  }
+}
+
 async function streamChatResponse(
   c: Context,
   db: Db,
@@ -292,22 +318,32 @@ async function streamChatResponse(
   claim: SettleClaim,
   shouldCharge: boolean,
 ): Promise<Response> {
-  // shortcut: buffer the SSE stream so the bytes are replicated byte-identically.
-  // Because the platform buffers the FULL upstream response, the upstream cost
-  // is fully incurred regardless of a client disconnect, so we bill the full
-  // buffered usage when the upstream answered 2xx. Upgrade: incremental tee +
-  // true proportional charge for long-running streams.
+  const headers = {
+    "content-type": "text/event-stream",
+    "cache-control": "no-cache",
+    connection: "keep-alive",
+  };
+
+  // Read the body FIRST: by the time the upstream has finished talking, an
+  // aborted request no longer exposes its body, which would silently skip both
+  // the charge and the 4xx path below.
   const text = await upstream.text();
+  const aborted = c.req.raw.signal.aborted;
+
+  if (aborted) {
+    // The client walked away mid-stream. It still consumed (and we still paid
+    // for) the tokens the upstream produced, so charge that instead of
+    // forgetting the request entirely (Prd §7).
+    if (shouldCharge) {
+      await settlePartial(redis, claim, text);
+    }
+    return new Response(null, { status: 499 });
+  }
+
   if (shouldCharge) {
     const usage = parseUsage(claim.model.id, text);
     await settle(db, redis, claim, usage);
   }
-  return new Response(text, {
-    status: upstream.status,
-    headers: {
-      "content-type": "text/event-stream",
-      "cache-control": "no-cache",
-      connection: "keep-alive",
-    },
-  });
+
+  return new Response(text, { status: upstream.status, headers });
 }

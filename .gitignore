@@ -11,6 +11,9 @@ build/
 .env
 .env.*
 !.env.example
+# Template produksi berisi placeholder saja (tanpa rahasia), jadi ikut dilacak
+# agar deploy cukup `cp .env.production .env`.
+!.env.production
 
 # Logs
 *.log
